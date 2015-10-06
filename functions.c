@@ -33,10 +33,7 @@
 #define MOTOR_SPEED        118
 #define MOTOR_STOP_SPEED        0
 
-int frontLeftVal  = 0; /*!< value of the front left  motor */
-int backLeftVal   = 0; /*!< value of the back  left  motor */
-int frontRightVal = 0; /*!< value of the front right motor */
-int backRightVal  = 0; /*!< value of the back  right motor */
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -53,10 +50,10 @@ int backRightVal  = 0; /*!< value of the back  right motor */
 */
 void clearMotors(){
 	//Set all motor values to 0
-	frontLeftVal  = 0;
-	backLeftVal   = 0;
-	frontRightVal = 0;
-	backRightVal  = 0;
+	motor[frontl]  = 0;
+	motor[backl]   = 0;
+	motor[frontr] = 0;
+	motor[backr]  = 0;
 }
 
 /**
@@ -66,10 +63,10 @@ void clearMotors(){
 */
 void setMotors(int power){
 	//Set all motor values to power value
-	frontLeftVal  = power;
-	backLeftVal   = power;
-	frontRightVal = power;
-	backRightVal  = power;
+	motor[frontl]  = power;
+	motor[backl]   = power;
+	motor[frontr] = power;
+	motor[backr]  = power;
 }
 
 /**
@@ -82,8 +79,8 @@ void setMotors(int power){
 *
 */
 void setMotorsLeft(int speed){
-	frontLeftVal = speed;
-	backLeftVal  = speed;
+	motor[frontl] = speed;
+	motor[backl]  = speed;
 }
 
 /**
@@ -96,8 +93,8 @@ void setMotorsLeft(int speed){
 *
 */
 void setMotorsRight(int speed){
-	frontRightVal = speed;
-	backRightVal  = speed;
+	motor[frontr] = speed;
+	motor[backr]  = speed;
 }
 
 /**
@@ -107,16 +104,16 @@ void setMotorsRight(int speed){
 */
 void testMotors()
 {
-	frontRightVal=118;//Set individual motor
+	motor[frontr]=118;//Set individual motor
 	wait1Msec(1500); //Wait 1.5 seconds
 	clearMotors(); //clear motor(s)
-	backRightVal=118;
+	motor[backr]=118;
 	wait1Msec(1500);
 	clearMotors();
-	frontLeftVal=118;
+	motor[frontl]=118;
 	wait1Msec(1500);
 	clearMotors();
-	backLeftVal=118;
+	motor[backl]=118;
 	wait1Msec(1500);
 	clearMotors();
 }
@@ -287,16 +284,16 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 	if(forward){
 		while(abs(SensorValue[gyro]) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
-			frontLeftVal = speed;
-		  backLeftVal  = speed;
+			motor[frontl] = speed;
+		  motor[backl]  = speed;
 		}
 		// stop motors
 		clearMotors();
 	} else {
 		while(abs(SensorValue[gyro]) < degrees){
 			//Set only the left side motors to the negative target value
-			frontLeftVal = -speed;
-		  backLeftVal  = -speed;
+			motor[frontl] = -speed;
+		  motor[backl]  = -speed;
 		}
 		// stop motors
 		clearMotors();
@@ -325,16 +322,16 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 	if(forward){
 		while(abs(SensorValue[gyro]) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
-			frontRightVal = speed;
-		  backRightVal  = speed;
+			motor[frontr] = speed;
+		  motor[backr]  = speed;
 		}
 		// stop motors
 		clearMotors();
 	} else {
 		while(abs(SensorValue[gyro]) < degrees){
 			//Set only the left side motors to the negative target value
-			frontRightVal = -speed;
-		  backRightVal  = -speed;
+			motor[frontr] = -speed;
+		  motor[backr]  = -speed;
 		}
 		// stop motors
 		clearMotors();
@@ -362,24 +359,25 @@ void turnRightDegrees(float degree, float speed=90)
 	float first=degree*.6;
 	while(abs(SensorValue[gyro]) < first){ //Turn the first 60%
 			//Since it's turn right, we want to set right motors backwards and left motors forward.
-			frontLeftVal = speed;
-    	frontRightVal = -speed;
-    	backLeftVal = speed;
-    	backRightVal = -speed;
+			motor[frontl] = speed;
+    	motor[frontr] = -speed;
+    	motor[backl] = speed;
+    	motor[backr] = -speed;
+    	//poop
 	}
 	while(abs(SensorValue[gyro]) <degree){ //Turn the remainin amount.
 		//We don't want the motors to run too slow, so we set a a safety net. The motor can't have a power less than 40.
 		if(speed*.35<40)//If 35% of the motor power is less than 40, set the power to 40.
 		{
-			frontLeftVal = 40;
-    	frontRightVal = -40;
-    	backLeftVal = 40;
-    	backRightVal = -40;
+			motor[frontl] = 40;
+    	motor[frontr] = -40;
+    	motor[backl] = 40;
+    	motor[backr] = -40;
 		} else { //If not set it to 35%
-				frontLeftVal = speed*.35;
-	    	frontRightVal = -speed*.35;
-	    	backLeftVal = speed*.35;
-	    	backRightVal = -speed*.35;
+				motor[frontl] = speed*.35;
+	    	motor[frontr] = -speed*.35;
+	    	motor[backl] = speed*.35;
+	    	motor[backr] = -speed*.35;
     }
 	}
 	clearMotors();
@@ -405,24 +403,24 @@ void turnLeftDegrees(float degree, float speed=90)
 	float first=degree*.6;
 	while(abs(SensorValue[gyro]) < first){
 			//Since it's turn left, we want to set right motors forwards and left motors backwards.
-				frontLeftVal = -speed;
-  	    frontRightVal = speed;
-  	    backLeftVal = -speed;
-  	    backRightVal = speed;
+				motor[frontl] = -speed;
+  	    motor[frontr] = speed;
+  	    motor[backl] = -speed;
+  	    motor[backr] = speed;
 	}
 	while(abs(SensorValue[gyro]) < degree){
 		//We don't want the motors to run too slow, so we set a a safety net. The motor can't have a power less than 40.
 		if(speed*.35<40)//If 35% of the motor power is less than 40, set the power to 40.
 		{
-				frontLeftVal = -40;
-		    frontRightVal = 40;
-		    backLeftVal = -40;
-		    backRightVal = 40;
+				motor[frontl] = -40;
+		    motor[frontr] = 40;
+		    motor[backl] = -40;
+		    motor[backr] = 40;
 		} else { //If not set it to 35%
-				frontLeftVal = -speed*.35;
-  	    frontRightVal = speed*.35;
-  	    backLeftVal = -speed*.35;
-  	    backRightVal = speed*.35;
+				motor[frontl] = -speed*.35;
+  	    motor[frontr] = speed*.35;
+  	    motor[backl] = -speed*.35;
+  	    motor[backr] = speed*.35;
     }
 	}
 	clearMotors();
@@ -441,10 +439,10 @@ void turnLeftDegrees(float degree, float speed=90)
 void turnRightSeconds(float seconds, float speed=118)
 {
 	//Since turn right, we want to set left motors forwards and right motors backwards.
-	frontLeftVal=speed;
-	backLeftVal=speed;
-	frontRightVal=-speed;
-	backRightVal=-speed;
+	motor[frontl]=speed;
+	motor[backl]=speed;
+	motor[frontr]=-speed;
+	motor[backr]=-speed;
 	wait1Msec(seconds*1000); //Wait desired amount of time
 	clearMotors(); //Stop
 }
@@ -461,10 +459,10 @@ void turnRightSeconds(float seconds, float speed=118)
 void turnLeftSeconds(float seconds, float speed=118)
 {
 	//Since turn left, we want to set the right motors forward and the left motors backwards
-	frontLeftVal = -speed;
-	backLeftVal = -speed;
-	frontRightVal = speed;
-	backRightVal = speed;
+	motor[frontl] = -speed;
+	motor[backl] = -speed;
+	motor[frontr] = speed;
+	motor[backr] = speed;
 	wait1Msec(seconds*1000); //Wait desired amount of time
 	clearMotors(); //Stop
 }
@@ -477,9 +475,9 @@ void turnLeftSeconds(float seconds, float speed=118)
 */
 task runMotors(){
 	while(true){
-		motor[backr]  = frontLeftVal;
-		motor[backr]  = backLeftVal;
-		motor[frontl] = frontRightVal;
-		motor[frontr] = backRightVal;
+		motor[motor[backr]]  = motor[frontl];
+		motor[motor[backr]]  = motor[backl];
+		motor[motor[frontl]] = motor[frontr];
+		motor[motor[frontr]] = motor[backr];
 	}
 }
