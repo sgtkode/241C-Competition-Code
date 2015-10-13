@@ -29,9 +29,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#define TIMEOUT_CNT_PER_SEC    10
-#define MOTOR_SPEED        118
-#define MOTOR_STOP_SPEED        0
+#define TIMEOUT_CNT_PER_SEC    10   /*!< amount of timeout counts per second */
+#define MOTOR_SPEED        		 118  /*!< default motor speed */
 
 
 
@@ -60,13 +59,22 @@ void clearMotors(){
 * Sets all motors to a certain value
 *
 * @author Sean Kelley      sgtkode01@gmail.com
+*
+* @param  speed   the speed of the motors
 */
-void setMotors(int power){
+void setMotors(int speed){
 	//Set all motor values to power value
+<<<<<<< HEAD
 	motor[frontl]  = power;
 	motor[backl]   = power;
 	motor[frontr] = power;
 	motor[backr]  = power;
+=======
+	frontLeftVal  = speed;
+	backLeftVal   = speed;
+	frontRightVal = speed;
+	backRightVal  = speed;
+>>>>>>> pinkertonrobotics/master
 }
 
 /**
@@ -75,7 +83,7 @@ void setMotors(int power){
 * @author Spencer Couture  spence.couture@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params  speed   the speed that the left motors will be set to
+* @param  speed   the speed that the left motors will be set to
 *
 */
 void setMotorsLeft(int speed){
@@ -89,7 +97,7 @@ void setMotorsLeft(int speed){
 * @author Spencer Couture  spence.couture@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params  speed   the speed that the right motors will be set to
+* @param  speed   the speed that the right motors will be set to
 *
 */
 void setMotorsRight(int speed){
@@ -123,8 +131,8 @@ void testMotors()
 *
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 *
-* @params  seconds  amount of seconds to move forward
-*	@params  speed    speed of motors
+* @param  seconds  amount of seconds to move forward
+*	@param  speed    speed of motors
 *
 */
 void forwardSeconds(float seconds, int speed=MOTOR_SPEED)
@@ -140,8 +148,8 @@ void forwardSeconds(float seconds, int speed=MOTOR_SPEED)
 *
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 *
-* @params  seconds  amount of seconds to move backward
-*	@params  speed    speed of motors
+* @param  seconds  amount of seconds to move backward
+*	@param  speed    speed of motors
 *
 */
 void backwardSeconds(float seconds, int speed=MOTOR_SPEED)
@@ -162,7 +170,7 @@ void backwardSeconds(float seconds, int speed=MOTOR_SPEED)
 * @param  speed									speed of motors
 *
 */
-int DriveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MOTOR_SPEED){
+int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MOTOR_SPEED){
 	int  timeout;
 
 	// Drive motor until encoder has moved a number counts or
@@ -268,9 +276,9 @@ task lockRightSide()
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params   degrees   amount of degrees to turn right
-* @params   forward   boolean if bot is turning forward or backward
-* @params   speed     speed of motors
+* @param   degrees   amount of degrees to turn right
+* @param   forward   boolean if bot is turning forward or backward
+* @param   speed     speed of motors
 *
 */
 void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEED){
@@ -304,12 +312,13 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 * Turns bot left only using left side motors
 *
 * @warning requires gyro
+*
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params   degrees   amount of degrees to turn left
-* @params   forward   boolean if bot is turning forward or backward
-* @params   speed     speed of motors
+* @param   degrees   amount of degrees to turn left
+* @param   forward   boolean if bot is turning forward or backward
+* @param   speed     speed of motors
 *
 */
 void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEED){
@@ -342,11 +351,12 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 * Turns bot right a given amount of degrees
 *
 * @warning requires gyro
+*
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params  degree  amount of degrees to turn right
-*	@params	 speed       speed of motors
+* @param  degree  amount of degrees to turn right
+*	@param	 speed       speed of motors
 *
 */
 void turnRightDegrees(float degree, float speed=90)
@@ -389,8 +399,8 @@ void turnRightDegrees(float degree, float speed=90)
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @params  degree  amount of degrees to turn left
-*	@params	 speed       speed of motors
+* @param  degree  amount of degrees to turn left
+*	@param	speed   speed of motors
 *
 */
 void turnLeftDegrees(float degree, float speed=90)
@@ -432,8 +442,8 @@ void turnLeftDegrees(float degree, float speed=90)
 *
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 *
-* @params  seconds   amount of seconds to turn right
-* @params	 speed         speed of motors
+* @param   seconds   amount of seconds to turn right
+* @param	 speed     speed of motors
 *
 */
 void turnRightSeconds(float seconds, float speed=118)
@@ -452,8 +462,8 @@ void turnRightSeconds(float seconds, float speed=118)
 *
 * @author Bernard Suwirjo  bsuwirjo@gmail.com
 *
-* @params  seconds   amount of seconds to turn left
-* @params	 speed         speed of motors
+* @param  seconds   amount of seconds to turn left
+* @param	speed    speed of motors
 *
 */
 void turnLeftSeconds(float seconds, float speed=118)
