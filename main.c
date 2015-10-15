@@ -59,9 +59,9 @@ void pre_auton(){
  * Period of match when bot is using only code to operate.
  */
 task autonomous(){
-		forwardSeconds(2, 50);
-		turnRightDegrees(60, 30);
+	turnRightDegrees(90, 100);
 }
+
 
 
 
@@ -91,6 +91,82 @@ task usercontrol(){
   		motor[frontr] = vexRT[Ch2];
   		motor[backl] = vexRT[Ch3];
   		motor[frontl] = vexRT[Ch3];
+  	/*	if(vexRT[Btn7U] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 90){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+  		if(vexRT[Btn7R] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 180){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+  		if(vexRT[Btn7D] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 270){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+  		if(vexRT[Btn7L] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 360){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+
+
+  		if(vexRT[Btn8U] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 900){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+  		if(vexRT[Btn8R] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 1800){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+				    	motor[backr] = 90;
+  				}
+  		}
+  		if(vexRT[Btn8D] == 1){
+  				SensorValue[gyro] = 0;
+  				while(SensorValue[gyro] < 2700){
+  						motor[frontl] = -90;
+				    	motor[frontr] = 90;
+				    	motor[backl] = -90;
+
+				    	motor[backr] = 90;
+  				}
+  		}*/
+  		if(vexRT[Btn8L] == 1){
+  				SensorValue[gyro] = 0;
+  				turnLeftDegrees(135, 100);
+
+  		}
+
+
+
+
+
 
       wait1Msec(10);
     }

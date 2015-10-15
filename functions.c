@@ -62,19 +62,12 @@ void clearMotors(){
 *
 * @param  speed   the speed of the motors
 */
-void setMotors(int speed){
+void setMotors(int power){
 	//Set all motor values to power value
-<<<<<<< HEAD
 	motor[frontl]  = power;
 	motor[backl]   = power;
 	motor[frontr] = power;
 	motor[backr]  = power;
-=======
-	frontLeftVal  = speed;
-	backLeftVal   = speed;
-	frontRightVal = speed;
-	backRightVal  = speed;
->>>>>>> pinkertonrobotics/master
 }
 
 /**
@@ -367,15 +360,15 @@ void turnRightDegrees(float degree, float speed=90)
 	degree=degree*10;
 	//We want to slow down when we approach the target, so we calculate a first turn segment as 60% of the total
 	float first=degree*.6;
+
 	while(abs(SensorValue[gyro]) < first){ //Turn the first 60%
 			//Since it's turn right, we want to set right motors backwards and left motors forward.
 			motor[frontl] = speed;
     	motor[frontr] = -speed;
     	motor[backl] = speed;
     	motor[backr] = -speed;
-    	//poop
-	}
-	while(abs(SensorValue[gyro]) <degree){ //Turn the remainin amount.
+  }
+	while(abs(SensorValue[gyro]) < degree){ //Turn the remainin amount.
 		//We don't want the motors to run too slow, so we set a a safety net. The motor can't have a power less than 40.
 		if(speed*.35<40)//If 35% of the motor power is less than 40, set the power to 40.
 		{
@@ -432,6 +425,12 @@ void turnLeftDegrees(float degree, float speed=90)
   	    motor[backl] = -speed*.35;
   	    motor[backr] = speed*.35;
     }
+	}
+	while(abs(SensorValue[gyro]) > degree){
+			motor[frontl] = 30;
+	    motor[frontr] = -30;
+	    motor[backl] = 30;
+	    motor[backr] = -30;
 	}
 	clearMotors();
 }
