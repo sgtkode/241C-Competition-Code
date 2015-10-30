@@ -52,8 +52,30 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
-
 	while (1) {
-		delay(20);
+		int leftStick = joystickGetAnalog(1, 3);
+		int rightStick = joystickGetAnalog(1, 2);
+		motorSet(FL, -leftStick);
+		motorSet(BL, -leftStick);
+		motorSet(FR, rightStick);
+		motorSet(BR, rightStick);
+		if(joystickGetDigital(1, 6, JOY_UP) == true){		//fire catapult
+			digitalWrite(catapult, HIGH);
+		}
+		if(joystickGetDigital(1, 5, JOY_DOWN) == true){	//spin intake foreward
+			motorSet(intake1, 100);
+			motorSet(intake2, 100);
+		} else if(joystickGetDigital(1, 5, JOY_UP) == true){	//spin inatke backwards
+			motorSet(intake1, -100);
+			motorSet(intake2, -100);
+		}
+		else {							//stop all motors, return everything to rest state
+			motorStop(intake1);
+			motorStop(intake2);
+			digitalWrite(catapult, LOW);
+		}
+
+		delay(10);
+
 	}
 }

@@ -39,7 +39,8 @@
  * priority and stack size whenever the robot is enabled via the Field Management System or the
  * VEX Competition Switch in the autonomous mode. If the robot is disabled or communications is
  * lost, the autonomous task will be stopped by the kernel. Re-enabling the robot will restart
- * the task, not re-start it from where it left off.
+ * the task, not
+ * re-start it from where it left off.
  *
  * Code running in the autonomous task cannot access information from the VEX Joystick. However,
  * the autonomous function can be invoked from another task if a VEX Competition Switch is not
