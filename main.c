@@ -98,7 +98,7 @@ task usercontrol(){
   		motor[frontl] = vexRT[Ch3];
 
   		if(vexRT[Btn5U] == 1){
-  			spin_flywheel(100, 300);
+  			spin_flywheel(93, 300);
   		}
 
   		if(vexRT[Btn5D] == 1){
@@ -108,18 +108,18 @@ task usercontrol(){
         motor[flyL2] = 0;
   		}
 
-      if(vexRT[Btn6U] == 1){
+      if(vexRT[Btn8U] == 1){
   			motor[angle] = 80;
-  		} else if (vexRT[Btn6D] == 1){
+  		} else if (vexRT[Btn8D] == 1){
         motor[angle] = -80;
       } else {
         motor[angle] = 0;
       }
 
-      if(vexRT[Btn8U] == 1){
+      if(vexRT[Btn6U] == 1){
   			motor[intake] = 100;
-  		} else if (vexRT[Btn8D] == 1){
-        motor[intake] = 0;
+  		} else if (vexRT[Btn6D] == 1){
+        motor[intake] = -100;
       } else {
         motor[intake] = 0;
       }
