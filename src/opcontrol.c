@@ -55,10 +55,10 @@ void operatorControl() {
 	while (1) {
 		int leftStick = joystickGetAnalog(1, 3);
 		int rightStick = joystickGetAnalog(1, 2);
-		motorSet(FL, -leftStick);
-		motorSet(BL, -leftStick);
-		motorSet(FR, rightStick);
-		motorSet(BR, rightStick);
+		motorSet(frontl, -leftStick);
+		motorSet(backl, -leftStick);
+		motorSet(frontr, rightStick);
+		motorSet(backr, rightStick);
 
 		delay(10);
 

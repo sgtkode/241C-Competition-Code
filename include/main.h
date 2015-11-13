@@ -54,10 +54,27 @@ extern "C" {
 // actual code. If a function does not match a prototype, compile errors will occur.
 
 // Prototypes for initialization, operator control and autonomous
-#define FL 2
-#define BL 3
-#define FR 4
-#define BR 5
+
+// motors
+#define flyR1 1  /*!< port of the right 1 flywheel motor */
+#define flyR2 2  /*!< port of the right 2 flywheel motor */
+#define flyL1 3  /*!< port of the left 1 motor */
+#define flyL2 4  /*!< port of the left 2 motor */
+#define frontl 5 /*!< port of the front left motor */
+#define backl 6  /*!< port of the back left motor */
+#define frontr 7 /*!< port of the front right motor */
+#define backr 8  /*!< port of the back right motor */
+#define angle 9  /*!< port of the angle motor */
+#define intake 10  /*!< port of the intake motor */
+
+// sensors
+extern Encoder encoder;
+#define top_port_number 11
+#define bottom_port_number 12
+#define is_reversed 0
+
+extern Gyro gyro;
+#define gyro_port_number 1
 
 /**
  * Runs the user autonomous code. This function will be started in its own task with the default

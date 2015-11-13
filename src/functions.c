@@ -7,6 +7,8 @@
  *
  */
 
+#include "main.h"
+
  /////////////////////////////////////////////////////////////////////////////////////////
 //
 //                                 CONSTANTS
@@ -15,11 +17,6 @@
 
 #define TIMEOUT_CNT_PER_SEC    10   /*!< amount of timeout counts per second */
 #define MOTOR_SPEED        		 118  /*!< default motor speed */
-
-int frontr = 2; /*!< port of the front right motor */
-int frontl = 3; /*!< port of the front left motor */
-int backr  = 4; /*!< port of the back right motor */
-int backl  = 5; /*!< port of the back left motor */
 
 int frontLeftVal  = 0; /*!< value of the front left  motor */
 int backLeftVal   = 0; /*!< value of the back  left  motor */
@@ -162,7 +159,7 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 	// timeout_in_seconds seconds have passed
 
 	// Zero the encoder
-	SensorValue[ encoder ] = 0;
+	encoderReset(encoder);
 
 	// Run the motor forwards or backwards
 	if( encoder_count > 0 ){
@@ -177,11 +174,11 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 		// check encoder
 		if( encoder_count > 0 ){
 			// going forwards
-			if( SensorValue[ encoder ] >= encoder_count ){
+			if( encoderGet(encoder) >= encoder_count ){
 				break;
 			} else {
 			// going backwards
-				if( SensorValue[ encoder ] <= encoder_count ){
+				if( encoderGet(encoder) <= encoder_count ){
 					break;
 				}
 			}
@@ -213,7 +210,7 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 *
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-*/
+*//*
 task lockLeftSide()
 {
 	//float target = 0;
@@ -221,13 +218,13 @@ task lockLeftSide()
 	//float iGain = .02;
 	//float error = target-SensorValue[encoderLeft];
 	//float errorSum=0;
-	while(true){
+	while(1==1){
 /*		error=target-SensorValue[encoderLeft];
 		errorSum+=error;
 		motor[FL] = error*pGain+errorSum*iGain;
-		  motor[BL] = error*pGain+errorSum*iGain;*/
+		  motor[BL] = error*pGain+errorSum*iGain;
 	}
-}
+}*/
 
 /**
 *
@@ -237,7 +234,7 @@ task lockLeftSide()
 *
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-*/
+*//*
 task lockRightSide()
 {
 	//float target = 0;
@@ -249,9 +246,9 @@ task lockRightSide()
 	/*error=target-SensorValue[encoderRight];
 		errorSum+=error;
 		motor[FR] = error*pGain+errorSum*iGain;
-	  motor[BR] = error*pGain+errorSum*iGain;*/
+	  motor[BR] = error*pGain+errorSum*iGain;
 	}
-}
+}*/
 
 /**
 * Turns bot right only using left side motors
@@ -272,10 +269,10 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 	degrees=degrees*10;
 	// reset gyro
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
-	SensorValue[gyro]=0;
+	gyroReset(gyro);
 	// turn forwards or backwards based on forward boolean
 	if(forward){
-		while(abs(SensorValue[gyro]) < degrees){ //While the gyro value is less than the target perform code below
+		while(abs(gyroGet(gyro)) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
 			motorSet(frontl,  speed);
 		  motorSet(backl,  speed);
@@ -283,7 +280,7 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 		// stop motors
 		clearMotors();
 	} else {
-		while(abs(SensorValue[gyro]) < degrees){
+		while(abs(gyroGet(gyro)) < degrees){
 			//Set only the left side motors to the negative target value
 			motorSet(frontl,  -speed);
       motorSet(backl,  -speed);
@@ -311,10 +308,10 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 	degrees=degrees*10;
 	// reset gyro
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
-	SensorValue[gyro]=0;
+	gyroReset(gyro);
 	// turn forwards or backwards based on forward boolean
 	if(forward){
-		while(abs(SensorValue[gyro]) < degrees){ //While the gyro value is less than the target perform code below
+		while(abs(gyroGet(gyro)) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
 			motorSet(frontr,  speed);
 		  motorSet(backr,  speed);
@@ -322,7 +319,7 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 		// stop motors
 		clearMotors();
 	} else {
-		while(abs(SensorValue[gyro]) < degrees){
+		while(abs(gyroGet(gyro)) < degrees){
 			//Set only the left side motors to the negative target value
 			motorSet(frontr,  -speed);
       motorSet(backr,  -speed);
@@ -347,19 +344,19 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 void turnRightDegrees(float degree, float speed=90)
 {
 	//Reset gyro
-	SensorValue[gyro]=0;
+	gyroReset(gyro);
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
 	degree=degree*10;
 	//We want to slow down when we approach the target, so we calculate a first turn segment as 60% of the total
 	float first=degree*.6;
-	while(abs(SensorValue[gyro]) < first){ //Turn the first 60%
+	while(abs(gyroGet(gyro)) < first){ //Turn the first 60%
 			//Since it's turn right, we want to set right motors backwards and left motors forward.
 			motorSet(frontl,  speed);
     	motorSet(frontr,  -speed);
     	motorSet(backl,  speed);
     	motorSet(backr,  -speed);
 	}
-	while(abs(SensorValue[gyro]) <degree){ //Turn the remainin amount.
+	while(abs(gyroGet(gyro)) <degree){ //Turn the remainin amount.
 		//We don't want the motors to run too slow, so we set a a safety net. The motor can't have a power less than 40.
 		if(speed*.35<40)//If 35% of the motor power is less than 40, set the power to 40.
 		{
@@ -390,19 +387,19 @@ void turnRightDegrees(float degree, float speed=90)
 void turnLeftDegrees(float degree, float speed=90)
 {
 	//Reset gyro
-	SensorValue[gyro]=0;
+	gyroReset(gyro);
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
 	degree=degree*10;
 	//We want to slow down when we approach the target, so we calculate a first turn segment as 60% of the total
 	float first=degree*.6;
-	while(abs(SensorValue[gyro]) < first){
+	while(abs(gyroGet(gyro)) < first){
 			//Since it's turn left, we want to set right motors forwards and left motors backwards.
 				motorSet(frontl,  -speed);
   	    motorSet(frontr,  speed);
   	    motorSet(backl,  -speed);
   	    motorSet(backr,  speed);
 	}
-	while(abs(SensorValue[gyro]) < degree){
+	while(abs(gyroGet(gyro)) < degree){
 		//We don't want the motors to run too slow, so we set a a safety net. The motor can't have a power less than 40.
 		if(speed*.35<40)//If 35% of the motor power is less than 40, set the power to 40.
 		{
@@ -462,21 +459,6 @@ void turnLeftSeconds(float seconds, float speed=118)
 }
 
 /**
-*	Set the motors to the current values
-*
-* @author Sean Kelley  sgtkode01@gmail.com
-*
-*/
-task runMotors(){
-	while(true){
-    motorSet(backr,  backRightVal);
-    motorSet(backl,  backLeftVal);
-    motorSet(frontr, frontRightVal);
-    motorSet(frontl, frontLeftVal);
-	}
-}
-
-/**
 *	Spins up the fly wheel to a certain power
 * value over a certain amount of seconds
 *
@@ -488,7 +470,7 @@ task runMotors(){
 */
 void spin_flywheel(float speed, int seconds){
   int power = 0;
-  if (motor[flyR1] == 0 && motor[flyR2] == 0 && motor[flyL1] == 0 && motor[flyL2] == 0){
+  if (motorGet(flyR1) == 0 && motorGet(flyR2) == 0 && motorGet(flyL1) == 0 && motorGet(flyL2) == 0){
     for (int i = 0; i < 21; i++){
       motorSet(flyR1, power);
       motorSet(flyR2, power);
