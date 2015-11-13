@@ -38,7 +38,7 @@ int backRightVal  = 0; /*!< value of the back  right motor */
 */
 void clearMotors(){
 	//Set all motor values to 0
-  motorSet(frontl,  0);
+	motorSet(frontl,  0);
 	motorSet(backl,  0);
 	motorSet(frontr,  0);
 	motorSet(backr,  0);
@@ -95,16 +95,16 @@ void setMotorsRight(int speed){
 void testMotors()
 {
 	motorSet(frontr,  118);//Set individual motor
-	wait1Msec(1500); //Wait 1.5 seconds
+	delay(1500); //Wait 1.5 seconds
 	clearMotors(); //clear motor(s)
 	motorSet(backr,  118);
-	wait1Msec(1500);
+	delay(1500);
 	clearMotors();
 	motorSet(frontl,  118);
-	wait1Msec(1500);
+	delay(1500);
 	clearMotors();
 	motorSet(backl,  118);
-	wait1Msec(1500);
+	delay(1500);
 	clearMotors();
 }
 
@@ -117,11 +117,10 @@ void testMotors()
 *	@param  speed    speed of motors
 *
 */
-void forwardSeconds(float seconds, int speed=MOTOR_SPEED)
-{
+void forwardSeconds(float seconds, int speed){
 	//Set all motors to target value
 	setMotors(speed);
-	wait1Msec(seconds * 1000);//Wait given amount of time
+	delay(seconds * 1000);//Wait given amount of time
 	clearMotors();
 }
 
@@ -134,11 +133,10 @@ void forwardSeconds(float seconds, int speed=MOTOR_SPEED)
 *	@param  speed    speed of motors
 *
 */
-void backwardSeconds(float seconds, int speed=MOTOR_SPEED)
-{
+void backwardSeconds(float seconds, int speed){
 	//Set all motors to negative target value
 	setMotors(-speed);
-	wait1Msec(seconds * 1000);//Wait given amount of time
+	delay(seconds * 1000);//Wait given amount of time
 	clearMotors();
 }
 
@@ -152,7 +150,7 @@ void backwardSeconds(float seconds, int speed=MOTOR_SPEED)
 * @param  speed									speed of motors
 *
 */
-int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MOTOR_SPEED){
+int driveByEncoder( int encoder_count, int timeout_in_seconds , int speed){
 	int  timeout;
 
 	// Drive motor until encoder has moved a number counts or
@@ -185,7 +183,7 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 		}
 
 		// wait 1/10 second
-		wait1Msec( 100 );
+		delay( 100 );
 	}
 
 	// Stop the motor
@@ -219,7 +217,7 @@ task lockLeftSide()
 	//float error = target-SensorValue[encoderLeft];
 	//float errorSum=0;
 	while(1==1){
-/*		error=target-SensorValue[encoderLeft];
+		error=target-SensorValue[encoderLeft];
 		errorSum+=error;
 		motor[FL] = error*pGain+errorSum*iGain;
 		  motor[BL] = error*pGain+errorSum*iGain;
@@ -243,7 +241,7 @@ task lockRightSide()
 	//float error = target-SensorValue[encoderRight];
 	//float errorSum=0;
 	while(true){
-	/*error=target-SensorValue[encoderRight];
+	error=target-SensorValue[encoderRight];
 		errorSum+=error;
 		motor[FR] = error*pGain+errorSum*iGain;
 	  motor[BR] = error*pGain+errorSum*iGain;
@@ -263,7 +261,7 @@ task lockRightSide()
 * @param   speed     speed of motors
 *
 */
-void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEED){
+void fancyTurnRightDegrees(int degrees, int forward, int speed){
 
 	// reset encoders
 	degrees=degrees*10;
@@ -271,7 +269,7 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
 	gyroReset(gyro);
 	// turn forwards or backwards based on forward boolean
-	if(forward){
+	if(forward == 1){
 		while(abs(gyroGet(gyro)) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
 			motorSet(frontl,  speed);
@@ -303,14 +301,14 @@ void fancyTurnRightDegrees(int degrees, bool forward=true, int speed = MOTOR_SPE
 * @param   speed     speed of motors
 *
 */
-void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEED){
+void fancyTurnLeftDegrees(int degrees, int forward, int speed){
 	// reset encoders
 	degrees=degrees*10;
 	// reset gyro
 	//gyro takes degrees from 0-3600, so we multiply by 10 to get a gyro processable number
 	gyroReset(gyro);
 	// turn forwards or backwards based on forward boolean
-	if(forward){
+	if(forward == 1){
 		while(abs(gyroGet(gyro)) < degrees){ //While the gyro value is less than the target perform code below
 			//Set only the left side motors to the target value
 			motorSet(frontr,  speed);
@@ -341,7 +339,7 @@ void fancyTurnLeftDegrees(int degrees, bool forward=true, int speed = MOTOR_SPEE
 *	@param	 speed       speed of motors
 *
 */
-void turnRightDegrees(float degree, float speed=90)
+void turnRightDegrees(float degree, float speed)
 {
 	//Reset gyro
 	gyroReset(gyro);
@@ -384,7 +382,7 @@ void turnRightDegrees(float degree, float speed=90)
 *	@param	speed   speed of motors
 *
 */
-void turnLeftDegrees(float degree, float speed=90)
+void turnLeftDegrees(float degree, float speed)
 {
 	//Reset gyro
 	gyroReset(gyro);
@@ -427,14 +425,14 @@ void turnLeftDegrees(float degree, float speed=90)
 * @param	 speed     speed of motors
 *
 */
-void turnRightSeconds(float seconds, float speed=118)
+void turnRightSeconds(float seconds, float speed)
 {
 	//Since turn right, we want to set left motors forwards and right motors backwards.
   motorSet(frontl,  speed);
   motorSet(backl,  speed);
   motorSet(frontr,  -speed);
   motorSet(backr,  -speed);
-	wait1Msec(seconds*1000); //Wait desired amount of time
+	delay(seconds*1000); //Wait desired amount of time
 	clearMotors(); //Stop
 }
 
@@ -447,14 +445,14 @@ void turnRightSeconds(float seconds, float speed=118)
 * @param	speed    speed of motors
 *
 */
-void turnLeftSeconds(float seconds, float speed=118)
+void turnLeftSeconds(float seconds, float speed)
 {
 	//Since turn left, we want to set the right motors forward and the left motors backwards
 	motorSet(frontl,  -speed);
 	motorSet(backl,  -speed);
 	motorSet(frontr,  speed);
 	motorSet(backr,  speed);
-	wait1Msec(seconds*1000); //Wait desired amount of time
+	delay(seconds*1000); //Wait desired amount of time
 	clearMotors(); //Stop
 }
 
@@ -477,7 +475,7 @@ void spin_flywheel(float speed, int seconds){
       motorSet(flyL1, power);
       motorSet(flyL2, power);
       power = power + (speed/20);
-      wait1Msec(seconds/20);
+      delay(seconds/20);
     }
   }
 }
