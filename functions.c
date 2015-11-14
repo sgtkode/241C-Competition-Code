@@ -520,9 +520,9 @@ void turnLeftSeconds(float seconds, float speed=118)
 */
 task runMotors(){
 	while(true){
-		motor[backr]  = frontLeftVal;
-		motor[backr]  = backLeftVal;
-		motor[frontl] = frontRightVal;
+		motor[backr]  = backRightVal;
+		motor[backl]  = backLeftVal;
+		motor[frontl] = frontLeftVal;
 		motor[frontr] = backRightVal;
 	}
 }
@@ -545,14 +545,12 @@ task runMotors(){
 */
 void spin_flywheel(float speed, int seconds){
   int power = 0;
-  if (motor[flyR1] == 0 && motor[flyR2] == 0 && motor[flyL1] == 0 && motor[flyL2] == 0){
-    for (int i = 0; i < 21; i++){
-      motor[flyR1] = power;
-      motor[flyR2] = power;
-      motor[flyL1] = power;
-      motor[flyL2] = power;
-      power = power + (speed/20);
-      wait1Msec(seconds/20);
-    }
+  for (int i = 0; i < 21; i++){
+    motor[flyR1] = power;
+    motor[flyR2] = power;
+    motor[flyL1] = power;
+    motor[flyL2] = power;
+    power = power + (speed/20);
+    wait1Msec(seconds/20);
   }
 }

@@ -66,15 +66,22 @@ void pre_auton()
  * Period of match when bot is using only code to operate.
  */
 task autonomous(){
+
+	// allow motors to be controller by variables
+	startTask(runMotors);
+
 	// position of bot on field
 	int position = 1;
 
 	if(position == 1){ // blue, net side
-		driveByEncoder(100);
+
+		driveByEncoder(100, 3, 100);
 
 	} else if(position == 2){ // blue, enemy side
 
 	} else if(position == 3){ // red, net side
+
+		driveByEncoder(100, 3, 100);
 
 	} else if(position == 4){ // red, enemy side
 
