@@ -471,6 +471,16 @@ void turnLeftDegrees(float degree, float speed=90)
 	clearMotors();
 }
 
+/**
+* Turns bot right a given amount of ticks
+*
+* @author Bernard Suwirjo  bsuwirjo@gmail.com
+* @author Sean Kelley  sgtkode01@gmail.com
+*
+* @param  ticks  amount of degrees to turn right
+*	@param	speed  speed of motors
+*
+*/
 void turnRightTicks(int ticks, float speed=118)
 {
 	SensorValue[encoderL]=0;
@@ -483,7 +493,16 @@ void turnRightTicks(int ticks, float speed=118)
 	}
 }
 
-
+/**
+* Turns bot left a given amount of ticks
+*
+* @author Bernard Suwirjo  bsuwirjo@gmail.com
+* @author Sean Kelley  sgtkode01@gmail.com
+*
+* @param  ticks  amount of degrees to turn left
+*	@param	speed  speed of motors
+*
+*/
 void turnLeftTicks(int ticks, float speed=118)
 {
 	SensorValue[encoderR]=0;
