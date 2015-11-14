@@ -1,6 +1,6 @@
-# 241<letter> Competition Code Documentation
+# 241C Competition Code Documentation
 
-This is the documentation home page for team 241<letter>. Click "Files" in the top menu
+This is the documentation home page for team 241C. Click "Files" in the top menu
 to begin browsing.
 
 The actual repository for the code can be found here
