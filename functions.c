@@ -1,8 +1,8 @@
 #pragma config(Sensor, in1,    gyro,           sensorGyro)
 #pragma config(Sensor, dgtl1,  encoderL,       sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
-#pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
-#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port1,           flyR2,         tmotorVex393_HBridge, openLoop)
+#pragma config(Motor,  port2,           flyR1,         tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port5,           frontl,        tmotorVex393_MC29, openLoop)
@@ -579,4 +579,9 @@ void spin_flywheel(float speed, int seconds){
     power = power + (speed/20);
     wait1Msec(seconds/20);
   }
+
+  motor[flyR1] = speed-1;
+  motor[flyR2] = speed;
+  motor[flyL1] = speed-1;
+  motor[flyL2] = speed;
 }
