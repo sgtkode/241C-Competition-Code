@@ -1,5 +1,6 @@
 #pragma config(Sensor, in1,    gyro,           sensorGyro)
-#pragma config(Sensor, dgtl1,  encoder,        sensorQuadEncoder)
+#pragma config(Sensor, dgtl1,  encoderL,       sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
 #pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
@@ -177,7 +178,8 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 	// timeout_in_seconds seconds have passed
 
 	// Zero the encoder
-	SensorValue[ encoder ] = 0;
+	SensorValue[ encoderL ] = 0;
+	SensorValue[ encoderR ] = 0;
 
 	// Run the motor forwards or backwards
 	if( encoder_count > 0 ){
@@ -191,13 +193,47 @@ int driveByEncoder( int encoder_count, int timeout_in_seconds = 5 , int speed=MO
 	for( timeout=(timeout_in_seconds*TIMEOUT_CNT_PER_SEC); timeout > 0; timeout-- ){
 		// check encoder
 		if( encoder_count > 0 ){
-			// going forwards
-			if( SensorValue[ encoder ] >= encoder_count ){
+
+			if((SensorValue[encoderL] + SensorValue[encoderR])/2 >= encoder_count){
 				break;
 			} else {
-			// going backwards
-				if( SensorValue[ encoder ] <= encoder_count ){
-					break;
+				if((SensorValue[encoderL] - SensorValue[encoderR]) > 5){
+					frontLeftVal  = speed*0.5;
+					backLeftVal   = speed*0.5;
+					frontRightVal = speed;
+					backRightVal  = speed;
+				} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 5){
+					frontLeftVal  = speed;
+					backLeftVal   = speed;
+					frontRightVal = speed*0.5;
+					backRightVal  = speed*0.5;
+				} else {
+					frontLeftVal  = speed;
+					backLeftVal   = speed;
+					frontRightVal = speed;
+					backRightVal  = speed;
+				}
+			}
+		} else {
+
+			if((SensorValue[encoderL] + SensorValue[encoderR])/2 <= encoder_count){
+				break;
+			} else {
+				if((SensorValue[encoderL] - SensorValue[encoderR]) > 5){
+					frontLeftVal  = -speed*0.5;
+					backLeftVal   = -speed*0.5;
+					frontRightVal = -speed;
+					backRightVal  = -speed;
+				} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 5){
+					frontLeftVal  = -speed;
+					backLeftVal   = -speed;
+					frontRightVal = -speed*0.5;
+					backRightVal  = -speed*0.5;
+				} else {
+					frontLeftVal  = -speed;
+					backLeftVal   = -speed;
+					frontRightVal = -speed;
+					backRightVal  = -speed;
 				}
 			}
 		}
@@ -490,6 +526,12 @@ task runMotors(){
 		motor[frontr] = backRightVal;
 	}
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+//                                 Flywheel
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 
 /**
 *	Spins up the fly wheel to a certain power

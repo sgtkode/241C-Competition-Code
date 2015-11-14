@@ -1,5 +1,6 @@
 #pragma config(Sensor, in1,    gyro,           sensorGyro)
-#pragma config(Sensor, dgtl1,  encoder,        sensorQuadEncoder)
+#pragma config(Sensor, dgtl1,  encoderL,       sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
 #pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
@@ -65,7 +66,19 @@ void pre_auton()
  * Period of match when bot is using only code to operate.
  */
 task autonomous(){
+	// position of bot on field
+	int position = 1;
 
+	if(position == 1){ // blue, net side
+		driveByEncoder(100);
+
+	} else if(position == 2){ // blue, enemy side
+
+	} else if(position == 3){ // red, net side
+
+	} else if(position == 4){ // red, enemy side
+
+	}
 }
 
 
@@ -92,11 +105,28 @@ task usercontrol(){
       //                                      Drive
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-  		motor[backr] = vexRT[Ch2];
-  		motor[frontr] = vexRT[Ch2];
-  		motor[backl] = vexRT[Ch3];
-  		motor[frontl] = vexRT[Ch3];
+  		if((SensorValue[encoderL] - SensorValue[encoderR]) > 5){
+				motor[backr] = vexRT[Ch2];
+	  		motor[frontr] = vexRT[Ch2];
+	  		motor[backl] = vexRT[Ch3]*0.5;
+	  		motor[frontl] = vexRT[Ch3]*0.5;
+			} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 5){
+				motor[backr] = vexRT[Ch2]*0.5;
+	  		motor[frontr] = vexRT[Ch2]*0.5;
+	  		motor[backl] = vexRT[Ch3];
+	  		motor[frontl] = vexRT[Ch3];
+			} else {
+				motor[backr] = vexRT[Ch2];
+	  		motor[frontr] = vexRT[Ch2];
+	  		motor[backl] = vexRT[Ch3];
+	  		motor[frontl] = vexRT[Ch3];
+			}
 
+			/////////////////////////////////////////////////////////////////////////////////////////
+      //
+      //                                      Flywheel
+      //
+      /////////////////////////////////////////////////////////////////////////////////////////
   		if(vexRT[Btn5U] == 1){
   			spin_flywheel(93, 300);
   		}
