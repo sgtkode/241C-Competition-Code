@@ -75,15 +75,56 @@ task autonomous(){
 
 	if(position == 1){ // blue, net side
 
-		driveByEncoder(100, 3, 100);
+		spin_flywheel(93, 300);
+		wait1Msec(1500);
+		driveByEncoder(1000, 6, 100);
+		turnRightTicks(50, 90);
+		wait1Msec(250);
+		motor[intake] = 75;
+		wait1Msec(500);
+		motor[intake] = 0;
+		wait1Msec(250);
+		spin_flywheel(0, 300);
 
+		//forwardSeconds(1);
 	} else if(position == 2){ // blue, enemy side
+
+		spin_flywheel(93, 300);
+		wait1Msec(1500);
+		driveByEncoder(1000, 6, 100);
+		turnRightTicks(50, 90);
+		wait1Msec(250);
+		motor[intake] = 75;
+		wait1Msec(500);
+		motor[intake] = 0;
+		wait1Msec(250);
+		spin_flywheel(0, 300);
 
 	} else if(position == 3){ // red, net side
 
-		driveByEncoder(100, 3, 100);
+		spin_flywheel(93, 300);
+		wait1Msec(1500);
+		driveByEncoder(1000, 6, 100);
+		turnRightTicks(50, 90);
+		wait1Msec(250);
+		motor[intake] = 75;
+		wait1Msec(500);
+		motor[intake] = 0;
+		wait1Msec(250);
+		spin_flywheel(0, 300);
 
 	} else if(position == 4){ // red, enemy side
+
+		spin_flywheel(93, 300);
+		wait1Msec(1500);
+		driveByEncoder(1000, 6, 100);
+		turnRightTicks(50, 90);
+		wait1Msec(250);
+		motor[intake] = 75;
+		wait1Msec(500);
+		motor[intake] = 0;
+		wait1Msec(250);
+		spin_flywheel(0, 300);
 
 	}
 }

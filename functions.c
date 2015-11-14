@@ -471,6 +471,32 @@ void turnLeftDegrees(float degree, float speed=90)
 	clearMotors();
 }
 
+void turnRightTicks(int ticks, float speed=118)
+{
+	SensorValue[encoderL]=0;
+	while(SensorValue[encoderL]<ticks)
+	{
+		motor[frontl] = speed;
+		motor[backl] = speed;
+		motor[frontr] = -speed;
+		motor[backr] = -speed;
+	}
+}
+
+
+void turnLeftTicks(int ticks, float speed=118)
+{
+	SensorValue[encoderR]=0;
+	while(SensorValue[encoderR]<ticks)
+	{
+		motor[frontl] = -speed;
+		motor[backl] = -speed;
+		motor[frontr] = speed;
+		motor[backr] = speed;
+	}
+}
+
+
 
 /**
 * Turns bot right a given amount of seconds
