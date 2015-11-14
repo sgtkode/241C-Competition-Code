@@ -92,7 +92,7 @@ task autonomous(){
 		spin_flywheel(93, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
-		turnRightTicks(50, 90);
+		turnLeftTicks(50, 90);
 		wait1Msec(250);
 		motor[intake] = 75;
 		wait1Msec(500);
@@ -105,7 +105,7 @@ task autonomous(){
 		spin_flywheel(93, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
-		turnRightTicks(50, 90);
+		turnLeftTicks(50, 90);
 		wait1Msec(250);
 		motor[intake] = 75;
 		wait1Msec(500);
