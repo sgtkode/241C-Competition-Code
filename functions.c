@@ -588,8 +588,8 @@ task runMotors(){
 * @param	 seconds    seconds to spin up motors
 *
 */
-void spin_flywheel(float speed, int seconds){
-  int power = 0;
+void spin_flywheel(float initial=0, float speed, int seconds){
+  int power = initial;
   for (int i = 0; i < 21; i++){
     motor[flyR1] = power;
     motor[flyR2] = power;
@@ -599,8 +599,8 @@ void spin_flywheel(float speed, int seconds){
     wait1Msec(seconds/20);
   }
 
-  motor[flyR1] = speed-1;
+  motor[flyR1] = speed;
   motor[flyR2] = speed;
-  motor[flyL1] = speed-1;
+  motor[flyL1] = speed;
   motor[flyL2] = speed;
 }

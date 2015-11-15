@@ -71,11 +71,11 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 1;
+	int position = 2;
 
 	if(position == 1){ // blue, net side
 
-		spin_flywheel(93, 300);
+		spin_flywheel(0, 92, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
 		turnRightTicks(50, 90);
@@ -84,25 +84,25 @@ task autonomous(){
 		wait1Msec(500);
 		motor[intake] = 0;
 		wait1Msec(250);
-		spin_flywheel(0, 300);
+		spin_flywheel(0, 0, 300);
 
 		//forwardSeconds(1);
 	} else if(position == 2){ // blue, enemy side
 
-		spin_flywheel(93, 300);
+		spin_flywheel(0, 92, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
-		turnLeftTicks(50, 90);
+		turnLeftTicks(62, 90);
 		wait1Msec(250);
 		motor[intake] = 75;
-		wait1Msec(500);
+		wait1Msec(1000);
 		motor[intake] = 0;
 		wait1Msec(250);
-		spin_flywheel(0, 300);
+		spin_flywheel(0, 0, 300);
 
 	} else if(position == 3){ // red, net side
 
-		spin_flywheel(93, 300);
+		spin_flywheel(0, 92, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
 		turnLeftTicks(50, 90);
@@ -111,11 +111,11 @@ task autonomous(){
 		wait1Msec(500);
 		motor[intake] = 0;
 		wait1Msec(250);
-		spin_flywheel(0, 300);
+		spin_flywheel(0, 0, 300);
 
 	} else if(position == 4){ // red, enemy side
 
-		spin_flywheel(93, 300);
+		spin_flywheel(0, 92, 300);
 		wait1Msec(1500);
 		driveByEncoder(1000, 6, 100);
 		turnRightTicks(50, 90);
@@ -124,7 +124,7 @@ task autonomous(){
 		wait1Msec(500);
 		motor[intake] = 0;
 		wait1Msec(250);
-		spin_flywheel(0, 300);
+		spin_flywheel(0, 0, 300);
 
 	}
 }
@@ -142,6 +142,8 @@ task autonomous(){
  */
 task usercontrol(){
 
+	bool flywheelHalf = false;
+	float initial = 0;
 
   while (true)
 	{
@@ -176,7 +178,15 @@ task usercontrol(){
       //
       /////////////////////////////////////////////////////////////////////////////////////////
   		if(vexRT[Btn5U] == 1){
-  			spin_flywheel(93, 300);
+  			if(flywheelHalf){
+  				spin_flywheel(45, 45, 300);
+  				flywheelHalf = false;
+  			} else {
+  				spin_flywheel(initial, 92, 300);
+  				flywheelHalf = true;
+  				initial = 45;
+  			}
+
   		}
 
   		if(vexRT[Btn5D] == 1){
