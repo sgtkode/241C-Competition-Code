@@ -179,12 +179,12 @@ task usercontrol(){
       /////////////////////////////////////////////////////////////////////////////////////////
   		if(vexRT[Btn5U] == 1){
   			if(flywheelHalf){
-  				spin_flywheel(45, 45, 300);
+  				spin_flywheel(50, 50, 300);
   				flywheelHalf = false;
   			} else {
-  				spin_flywheel(initial, 92, 300);
+  				spin_flywheel(initial, 100, 300);
   				flywheelHalf = true;
-  				initial = 45;
+  				initial = 50;
   			}
 
   		}
