@@ -155,14 +155,14 @@ task usercontrol(){
       //                                      Drive
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-  		if((SensorValue[encoderL] - SensorValue[encoderR]) > 5){
+  		if((SensorValue[encoderL] - SensorValue[encoderR]) > 10){
 				motor[backr] = vexRT[Ch2];
 	  		motor[frontr] = vexRT[Ch2];
-	  		motor[backl] = vexRT[Ch3]*0.5;
-	  		motor[frontl] = vexRT[Ch3]*0.5;
-			} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 5){
-				motor[backr] = vexRT[Ch2]*0.5;
-	  		motor[frontr] = vexRT[Ch2]*0.5;
+	  		motor[backl] = vexRT[Ch3]*0.25;
+	  		motor[frontl] = vexRT[Ch3]*0.25;
+			} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 10){
+				motor[backr] = vexRT[Ch2]*0.25;
+	  		motor[frontr] = vexRT[Ch2]*0.25;
 	  		motor[backl] = vexRT[Ch3];
 	  		motor[frontl] = vexRT[Ch3];
 			} else {
@@ -180,11 +180,9 @@ task usercontrol(){
   		if(vexRT[Btn5U] == 1){
   			if(flywheelHalf){
   				spin_flywheel(40, 40, 300);
-  				motor[topIntake] = 50;
   				flywheelHalf = false;
   			} else {
   				spin_flywheel(initial, 75, 300);
-  				motor[topIntake] = 100;
   				flywheelHalf = true;
   				initial = 40;
   			}
