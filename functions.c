@@ -595,7 +595,7 @@ void spin_flywheel(float initial=0, float speed, int seconds){
     motor[flyR2] = power;
     motor[flyL1] = power;
     motor[flyL2] = power;
-    motor[topIntake] = power + (speed/4);
+    motor[topIntake] = power - (speed/5);
     power = power + (speed/20);
     wait1Msec(seconds/20);
   }
@@ -604,5 +604,5 @@ void spin_flywheel(float initial=0, float speed, int seconds){
   motor[flyR2] = speed;
   motor[flyL1] = speed;
   motor[flyL2] = speed;
-  motor[topIntake] = speed + (speed/4);
+  motor[topIntake] = speed - (speed/5);
 }

@@ -1,10 +1,15 @@
+#pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    gyro,           sensorGyro)
 #pragma config(Sensor, dgtl1,  encoderL,       sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
+#pragma config(Sensor, dgtl7,  ledMed,         sensorLEDtoVCC)
+#pragma config(Sensor, dgtl8,  ledHigh,        sensorLEDtoVCC)
+#pragma config(Sensor, I2C_1,  flyR2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_2,  flyL2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
-#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_1)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_2)
 #pragma config(Motor,  port5,           frontl,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           frontr,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,           backl,         tmotorVex393_MC29, openLoop, reversed)
@@ -144,6 +149,9 @@ task usercontrol(){
 
 	bool flywheelHalf = false;
 	float initial = 0;
+	float flywheelTicksPassed = 0;
+	SensorValue[ledMed] = 0;
+	SensorValue[ledHigh] = 0;
 
   while (true)
 	{
@@ -177,6 +185,26 @@ task usercontrol(){
       //                                      Flywheel
       //
       /////////////////////////////////////////////////////////////////////////////////////////
+			flywheelTicksPassed = (abs(nMotorEncoder[flyR2]) + abs(nMotorEncoder[flyL2])) / 2;
+			nMotorEncoder[flyR2] = 0;
+			nMotorEncoder[flyL2] = 0;
+
+			if(flywheelTicksPassed > 2){
+				SensorValue[ledMed] = 1;
+				SensorValue[ledHigh] = 1;
+			} else if(flywheelTicksPassed > 1){
+				SensorValue[ledMed] = 1;
+				SensorValue[ledHigh] = 0;
+			} else {
+				SensorValue[ledMed] = 0;
+				SensorValue[ledHigh] = 0;
+			}
+
+			if(vexRT[Btn8R] == 1){
+				SensorValue[ledMed] = 1;
+				SensorValue[ledHigh] = 1;
+			}
+
   		if(vexRT[Btn5U] == 1){
   			if(flywheelHalf){
   				spin_flywheel(40, 40, 300);
