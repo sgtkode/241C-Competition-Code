@@ -152,6 +152,7 @@ task usercontrol(){
 	float flywheelTicksPassed = 0;
 	SensorValue[ledMed] = 0;
 	SensorValue[ledHigh] = 0;
+  int loopCount = 0;
 
   while (true)
 	{
@@ -185,20 +186,22 @@ task usercontrol(){
       //                                      Flywheel
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-			flywheelTicksPassed = (abs(nMotorEncoder[flyR2]) + abs(nMotorEncoder[flyL2])) / 2;
-			nMotorEncoder[flyR2] = 0;
-			nMotorEncoder[flyL2] = 0;
+      if(loopCount%25 == 0){
+        flywheelTicksPassed = (abs(nMotorEncoder[flyR2]) + abs(nMotorEncoder[flyL2])) / 2;
+  			nMotorEncoder[flyR2] = 0;
+  			nMotorEncoder[flyL2] = 0;
 
-			if(flywheelTicksPassed > 2){
-				SensorValue[ledMed] = 1;
-				SensorValue[ledHigh] = 1;
-			} else if(flywheelTicksPassed > 1){
-				SensorValue[ledMed] = 1;
-				SensorValue[ledHigh] = 0;
-			} else {
-				SensorValue[ledMed] = 0;
-				SensorValue[ledHigh] = 0;
-			}
+  			if(flywheelTicksPassed > 2){
+  				SensorValue[ledMed] = 1;
+  				SensorValue[ledHigh] = 1;
+  			} else if(flywheelTicksPassed > 1){
+  				SensorValue[ledMed] = 1;
+  				SensorValue[ledHigh] = 0;
+  			} else {
+  				SensorValue[ledMed] = 0;
+  				SensorValue[ledHigh] = 0;
+  			}
+      }
 
 			if(vexRT[Btn8R] == 1){
 				SensorValue[ledMed] = 1;
