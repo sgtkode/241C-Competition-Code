@@ -86,60 +86,32 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 2;
+	int position = 1;
 
 	if(position == 1){ // blue, net side
 
-		spin_flywheel(0, 92, 300);
-		wait1Msec(1500);
-		driveByEncoder(1000, 6, 100);
-		turnRightTicks(50, 90);
-		wait1Msec(250);
-		motor[bottomIntake] = 75;
-		wait1Msec(500);
-		motor[bottomIntake] = 0;
-		wait1Msec(250);
-		spin_flywheel(0, 0, 300);
+		spin_flywheel(0, 75, 300);
+		motor[bottomIntake] = 100;
+		wait1Msec(10000);
 
 		//forwardSeconds(1);
 	} else if(position == 2){ // blue, enemy side
 
-		spin_flywheel(0, 92, 300);
-		wait1Msec(1500);
-		driveByEncoder(1000, 6, 100);
-		turnLeftTicks(62, 90);
-		wait1Msec(250);
-		motor[bottomIntake] = 75;
-		wait1Msec(1000);
-		motor[bottomIntake] = 0;
-		wait1Msec(250);
-		spin_flywheel(0, 0, 300);
+		spin_flywheel(0, 75, 300);
+		motor[bottomIntake] = 100;
+		wait1Msec(10000);
 
 	} else if(position == 3){ // red, net side
 
-		spin_flywheel(0, 92, 300);
-		wait1Msec(1500);
-		driveByEncoder(1000, 6, 100);
-		turnLeftTicks(50, 90);
-		wait1Msec(250);
-		motor[bottomIntake] = 75;
-		wait1Msec(500);
-		motor[bottomIntake] = 0;
-		wait1Msec(250);
-		spin_flywheel(0, 0, 300);
+		spin_flywheel(0, 75, 300);
+		motor[bottomIntake] = 100;
+		wait1Msec(10000);
 
 	} else if(position == 4){ // red, enemy side
 
-		spin_flywheel(0, 92, 300);
-		wait1Msec(1500);
-		driveByEncoder(1000, 6, 100);
-		turnRightTicks(50, 90);
-		wait1Msec(250);
-		motor[bottomIntake] = 75;
-		wait1Msec(500);
-		motor[bottomIntake] = 0;
-		wait1Msec(250);
-		spin_flywheel(0, 0, 300);
+		spin_flywheel(0, 75, 300);
+		motor[bottomIntake] = 100;
+		wait1Msec(10000);
 
 	}
 }
@@ -226,7 +198,7 @@ task usercontrol(){
   				spin_flywheel(40, 40, 300);
   				flywheelHalf = false;
   			} else {
-  				spin_flywheel(initial, 75, 300);
+  				spin_flywheel(initial, 73, 300);
   				flywheelHalf = true;
   				initial = 40;
   			}
