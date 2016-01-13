@@ -43,7 +43,17 @@
 // all functions for competition code
 #include "functions.c"
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+//                                 Global Variables
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 
+
+bool flywheelHalf = false;
+float initial = 0;
+float flywheelTicksPassed = 0;
+int loopCount = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -147,12 +157,11 @@ task autonomous(){
  */
 task usercontrol(){
 
-	bool flywheelHalf = false;
-	float initial = 0;
-	float flywheelTicksPassed = 0;
 	SensorValue[ledMed] = 0;
 	SensorValue[ledHigh] = 0;
-  int loopCount = 0;
+	SensorValue[encoderL] = 0;
+	SensorValue[encoderR] = 0;
+	loopCount == 0;
 
   while (true)
 	{
@@ -164,43 +173,47 @@ task usercontrol(){
       //                                      Drive
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-  		if((SensorValue[encoderL] - SensorValue[encoderR]) > 10){
+  		/*if((abs(SensorValue[encoderL]) - abs(SensorValue[encoderR])) > 10){
 				motor[backr] = vexRT[Ch2];
 	  		motor[frontr] = vexRT[Ch2];
 	  		motor[backl] = vexRT[Ch3]*0.25;
 	  		motor[frontl] = vexRT[Ch3]*0.25;
-			} else if ((SensorValue[encoderR] - SensorValue[encoderL]) > 10){
+			} else if ((abs(SensorValue[encoderR]) - abs(SensorValue[encoderL])) > 10){
 				motor[backr] = vexRT[Ch2]*0.25;
 	  		motor[frontr] = vexRT[Ch2]*0.25;
 	  		motor[backl] = vexRT[Ch3];
 	  		motor[frontl] = vexRT[Ch3];
-			} else {
+			} else {*/
 				motor[backr] = vexRT[Ch2];
 	  		motor[frontr] = vexRT[Ch2];
 	  		motor[backl] = vexRT[Ch3];
 	  		motor[frontl] = vexRT[Ch3];
-			}
+			//}
 
 			/////////////////////////////////////////////////////////////////////////////////////////
       //
       //                                      Flywheel
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-      if(loopCount%25 == 0){
-        flywheelTicksPassed = (abs(nMotorEncoder[flyR2]) + abs(nMotorEncoder[flyL2])) / 2;
-  			nMotorEncoder[flyR2] = 0;
-  			nMotorEncoder[flyL2] = 0;
+	  	if(loopCount == 5){
 
-  			if(flywheelTicksPassed > 2){
+	  		flywheelTicksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
+
+  			SensorValue[flyR2IEM] = 0;
+  			SensorValue[flyL2IEM] = 0;
+
+  			if(flywheelTicksPassed >= 39){
   				SensorValue[ledMed] = 1;
   				SensorValue[ledHigh] = 1;
-  			} else if(flywheelTicksPassed > 1){
+  			} else if(flywheelTicksPassed > 25){
   				SensorValue[ledMed] = 1;
   				SensorValue[ledHigh] = 0;
   			} else {
   				SensorValue[ledMed] = 0;
   				SensorValue[ledHigh] = 0;
   			}
+
+  			loopCount = 0;
       }
 
 			if(vexRT[Btn8R] == 1){
@@ -235,6 +248,7 @@ task usercontrol(){
         motor[bottomIntake] = 0;
       }
 
+      loopCount += 1;
       wait1Msec(10);
     }
 	}
