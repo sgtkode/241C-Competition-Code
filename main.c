@@ -174,7 +174,7 @@ task usercontrol(){
   			SensorValue[flyR2IEM] = 0;
   			SensorValue[flyL2IEM] = 0;
 
-  			if(flywheelTicksPassed >= 39){
+  			if(flywheelTicksPassed >= 36){
   				SensorValue[ledMed] = 1;
   				SensorValue[ledHigh] = 1;
   			} else if(flywheelTicksPassed > 25){
@@ -198,7 +198,7 @@ task usercontrol(){
   				spin_flywheel(40, 40, 300);
   				flywheelHalf = false;
   			} else {
-  				spin_flywheel(initial, 73, 300);
+  				spin_flywheel(initial, 70, 300);
   				flywheelHalf = true;
   				initial = 40;
   			}
