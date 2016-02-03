@@ -16,8 +16,8 @@
  * @brief This file contains all functions to be used by
  * the competition code.
  *
- * @warning DO NOT compile this file
  * by itself, it will not work. Instead, save it
+ * @warning DO NOT compile this file
  * and compile main.c
  *
  * Also, you must include your motor and sensor setup somewhere in this file.
@@ -30,7 +30,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-//                                 CONSTANTS
+//                                 VARIABLES
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,11 @@ int frontLeftVal  = 0; /*!< value of the front left  motor */
 int backLeftVal   = 0; /*!< value of the back  left  motor */
 int frontRightVal = 0; /*!< value of the front right motor */
 int backRightVal  = 0; /*!< value of the back  right motor */
+
+int loopCount = 0; /*!< loop count for flywheel */
+float flywheelTicksPassed = 0; /*!< amount of ticks passed by flywheel in 5 loop counts */
+bool half = false; /*!< boolean that determines if flywheel is at half */
+int power = 0; /*!< power value for the flywheel */
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -579,16 +584,73 @@ task runMotors(){
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-*	Spins up the fly wheel to a certain power
-* value over a certain amount of seconds
+*	Spins up the fly wheel to a certain speed
 *
 * @author Sean Kelley  sgtkode01@gmail.com
 *
-* @param   speed   		speed of motors to reach
-* @param	 seconds    seconds to spin up motors
-*
 */
-void spin_flywheel(float initial=0, float speed, int seconds){
+task spin_flywheel(){
+	while(true){
+		if(loopCount == 50){
+
+			flywheelTicksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
+
+			SensorValue[flyR2IEM] = 0;
+			SensorValue[flyL2IEM] = 0;
+
+			if(half == false){
+				if(flywheelTicksPassed >= 130){
+					SensorValue[ledMed] = 1;
+					SensorValue[ledHigh] = 1;
+					motor[flyR1] = power;
+			    motor[flyR2] = power;
+			    motor[flyL1] = power;
+			    motor[flyL2] = power;
+			    motor[topIntake] = power - (power/5);
+				} else {
+					SensorValue[ledMed] = 0;
+					SensorValue[ledHigh] = 0;
+					if(power <= 127){
+						power = power + 5;
+					}
+					motor[flyR1] = power;
+			    motor[flyR2] = power;
+			    motor[flyL1] = power;
+			    motor[flyL2] = power;
+			    motor[topIntake] = power - (power/5);
+				}
+			} else {
+				if(flywheelTicksPassed > 65){
+					SensorValue[ledMed] = 1;
+					SensorValue[ledHigh] = 0;
+					motor[flyR1] = power;
+			    motor[flyR2] = power;
+			    motor[flyL1] = power;
+			    motor[flyL2] = power;
+			    motor[topIntake] = power - (power/5);
+				} else {
+					SensorValue[ledMed] = 0;
+					SensorValue[ledHigh] = 0;
+					if(power <= 127){
+						power = power + 5;
+					}
+					motor[flyR1] = power;
+			    motor[flyR2] = power;
+			    motor[flyL1] = power;
+			    motor[flyL2] = power;
+			    motor[topIntake] = power - (power/5);
+				}
+			}
+
+			loopCount = 0;
+	  } else {
+	  	loopCount += 1;
+	  }
+	  wait1Msec(10);
+	}
+}
+
+/*void spin_flywheel(float initial=0, float speed, int seconds){
   int power = initial;
   for (int i = 0; i < 21; i++){
     motor[flyR1] = power;
@@ -605,4 +667,4 @@ void spin_flywheel(float initial=0, float speed, int seconds){
   motor[flyL1] = speed;
   motor[flyL2] = speed;
   motor[topIntake] = speed - (speed/5);
-}
+}*/

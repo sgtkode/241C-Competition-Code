@@ -50,11 +50,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool flywheelHalf = false;
-float initial = 0;
-float flywheelTicksPassed = 0;
-int loopCount = 0;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 //                                 Pre-Autonomous
@@ -86,32 +81,48 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 1;
+	int position = 5;
 
 	if(position == 1){ // blue, net side
 
-		spin_flywheel(0, 75, 300);
+		//spin_flywheel(0, 75, 300);
 		motor[bottomIntake] = 100;
 		wait1Msec(10000);
 
 		//forwardSeconds(1);
 	} else if(position == 2){ // blue, enemy side
 
-		spin_flywheel(0, 75, 300);
+		//spin_flywheel(0, 75, 300);
 		motor[bottomIntake] = 100;
 		wait1Msec(10000);
 
 	} else if(position == 3){ // red, net side
 
-		spin_flywheel(0, 75, 300);
+		//spin_flywheel(0, 75, 300);
 		motor[bottomIntake] = 100;
 		wait1Msec(10000);
 
 	} else if(position == 4){ // red, enemy side
 
-		spin_flywheel(0, 75, 300);
+		//spin_flywheel(0, 75, 300);
 		motor[bottomIntake] = 100;
 		wait1Msec(10000);
+
+	} else if(position == 5){ // testing
+
+		/*motor[flyR1] = 50;
+		wait1Msec(1000);
+		motor[flyR1] = 0;
+		motor[flyR2] = 50;
+		wait1Msec(1000);
+		motor[flyR2] = 0;
+		motor[flyL1] = 50;
+		wait1Msec(1000);
+		motor[flyL1] = 0;
+		motor[flyL2] = 50;
+		wait1Msec(1000);
+		motor[flyL2] = 0;*/
+		startTask(spin_flywheel);
 
 	}
 }
@@ -133,7 +144,6 @@ task usercontrol(){
 	SensorValue[ledHigh] = 0;
 	SensorValue[encoderL] = 0;
 	SensorValue[encoderR] = 0;
-	loopCount == 0;
 
   while (true)
 	{
@@ -167,40 +177,18 @@ task usercontrol(){
       //                                      Flywheel
       //
       /////////////////////////////////////////////////////////////////////////////////////////
-	  	if(loopCount == 5){
+			startTask(spin_flywheel);
 
-	  		flywheelTicksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
-
-  			SensorValue[flyR2IEM] = 0;
-  			SensorValue[flyL2IEM] = 0;
-
-  			if(flywheelTicksPassed >= 36){
-  				SensorValue[ledMed] = 1;
-  				SensorValue[ledHigh] = 1;
-  			} else if(flywheelTicksPassed > 25){
-  				SensorValue[ledMed] = 1;
-  				SensorValue[ledHigh] = 0;
-  			} else {
-  				SensorValue[ledMed] = 0;
-  				SensorValue[ledHigh] = 0;
-  			}
-
-  			loopCount = 0;
-      }
-
-			if(vexRT[Btn8R] == 1){
+	  	if(vexRT[Btn8R] == 1){
 				SensorValue[ledMed] = 1;
 				SensorValue[ledHigh] = 1;
 			}
 
   		if(vexRT[Btn5U] == 1){
-  			if(flywheelHalf){
-  				spin_flywheel(40, 40, 300);
-  				flywheelHalf = false;
+  			if(half){
+  				half = false;
   			} else {
-  				spin_flywheel(initial, 70, 300);
-  				flywheelHalf = true;
-  				initial = 40;
+  				half = true;
   			}
   		}
 
@@ -220,7 +208,6 @@ task usercontrol(){
         motor[bottomIntake] = 0;
       }
 
-      loopCount += 1;
       wait1Msec(10);
     }
 	}
