@@ -185,11 +185,17 @@ task usercontrol(){
 			}
 
   		if(vexRT[Btn5U] == 1){
-  			if(half){
-  				half = false;
+  			if(FW_half){
+  				FW_half = false;
   			} else {
-  				half = true;
+  				FW_half = true;
   			}
+  		}
+
+  		if(vexRT[Btn7U] == 1){
+  			FW_highSpeed = FW_highSpeed + 1;
+  		} else if(vexRT[Btn7D] == 1){
+  			FW_highSpeed = FW_highSpeed - 1;
   		}
 
   		if(vexRT[Btn5D] == 1){
