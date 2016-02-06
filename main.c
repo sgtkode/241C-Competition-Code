@@ -4,12 +4,12 @@
 #pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
 #pragma config(Sensor, dgtl7,  ledMed,         sensorLEDtoVCC)
 #pragma config(Sensor, dgtl8,  ledHigh,        sensorLEDtoVCC)
-#pragma config(Sensor, I2C_1,  flyR2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
-#pragma config(Sensor, I2C_2,  flyL2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_1,  flyR2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_2,  flyL2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
-#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_1)
+#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_1)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_2)
+#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port5,           frontl,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           frontr,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,           backl,         tmotorVex393_MC29, openLoop, reversed)
@@ -49,6 +49,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
+bool highSpeedUpBtnPrsd = false;
+bool highSpeedDownBtnPrsd = false;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -81,13 +83,13 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 5;
+	int position = 1;
 
 	if(position == 1){ // blue, net side
 
 		//spin_flywheel(0, 75, 300);
-		motor[bottomIntake] = 100;
-		wait1Msec(10000);
+		//motor[bottomIntake] = 100;
+		//wait1Msec(10000);
 
 		//forwardSeconds(1);
 	} else if(position == 2){ // blue, enemy side
@@ -108,21 +110,21 @@ task autonomous(){
 		motor[bottomIntake] = 100;
 		wait1Msec(10000);
 
-	} else if(position == 5){ // testing
+	} else if(position == 5){ // testing bruh
 
-		/*motor[flyR1] = 50;
+		motor[flyR1] = 120;
 		wait1Msec(1000);
 		motor[flyR1] = 0;
-		motor[flyR2] = 50;
+		motor[flyR2] = 120;
 		wait1Msec(1000);
 		motor[flyR2] = 0;
-		motor[flyL1] = 50;
+		motor[flyL1] = 120;
 		wait1Msec(1000);
 		motor[flyL1] = 0;
-		motor[flyL2] = 50;
+		motor[flyL2] = 120;
 		wait1Msec(1000);
-		motor[flyL2] = 0;*/
-		startTask(spin_flywheel);
+		motor[flyL2] = 0;
+		//startTask(spin_flywheel);
 
 	}
 }
@@ -185,6 +187,16 @@ task usercontrol(){
 			}
 
   		if(vexRT[Btn5U] == 1){
+				FW_stopped = false;
+  			if(FW_half){
+  				FW_half = false;
+  			} else {
+  				FW_half = true;
+  			}
+  		}
+
+  		if(vexRT[Btn5D] == 1){
+  			FW_stopped = true;
   			if(FW_half){
   				FW_half = false;
   			} else {
@@ -193,17 +205,21 @@ task usercontrol(){
   		}
 
   		if(vexRT[Btn7U] == 1){
-  			FW_highSpeed = FW_highSpeed + 1;
-  		} else if(vexRT[Btn7D] == 1){
-  			FW_highSpeed = FW_highSpeed - 1;
+  			if(highSpeedUpBtnPrsd == false){
+  				FW_highSpeed = FW_highSpeed + 1;
+  			}
+  			highSpeedUpBtnPrsd = true;
+  		} else {
+  			highSpeedUpBtnPrsd = false;
   		}
 
-  		if(vexRT[Btn5D] == 1){
-  			motor[flyR1] = 0;
-        motor[flyR2] = 0;
-        motor[flyL1] = 0;
-        motor[flyL2] = 0;
-        motor[topIntake] = 0;
+  		if(vexRT[Btn7D] == 1){
+  			if(highSpeedDownBtnPrsd == false){
+  				FW_highSpeed = FW_highSpeed - 1;
+  			}
+  			highSpeedDownBtnPrsd = true;
+  		} else {
+  			highSpeedDownBtnPrsd = false;
   		}
 
       if(vexRT[Btn6U] == 1){
@@ -213,6 +229,10 @@ task usercontrol(){
       } else {
         motor[bottomIntake] = 0;
       }
+
+  		if(vexRT[Btn7R] == 1){
+      	FW_highSpeed = FW_highSpeedDefault;
+  		}
 
       wait1Msec(10);
     }

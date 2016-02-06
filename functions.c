@@ -4,12 +4,12 @@
 #pragma config(Sensor, dgtl3,  encoderR,       sensorQuadEncoder)
 #pragma config(Sensor, dgtl7,  ledMed,         sensorLEDtoVCC)
 #pragma config(Sensor, dgtl8,  ledHigh,        sensorLEDtoVCC)
-#pragma config(Sensor, I2C_1,  flyR2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
-#pragma config(Sensor, I2C_2,  flyL2IEM,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_1,  flyR2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_2,  flyL2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
-#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_1)
+#pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_1)
 #pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_2)
+#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port5,           frontl,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           frontr,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,           backl,         tmotorVex393_MC29, openLoop, reversed)
@@ -49,11 +49,14 @@ int backLeftVal   = 0; /*!< value of the back  left  motor */
 int frontRightVal = 0; /*!< value of the front right motor */
 int backRightVal  = 0; /*!< value of the back  right motor */
 
-int FW_highSpeed = 130;
-int FW_medSpeed = 65;
+int FW_highSpeed = 175;
+int FW_highSpeedDefault = 175;
+int FW_medSpeed = 60;
+int FW_medSpeedDefault = 60;
 int FW_loopCount = 0; /*!< loop count for flywheel */
 float FW_ticksPassed = 0; /*!< amount of ticks passed by flywheel in 5 loop counts */
 bool FW_half = false; /*!< boolean that determines if flywheel is at half */
+bool FW_stopped = true; /*!< boolean that determines if flywheel is stopped */
 int FW_power = 0; /*!< power value for the flywheel */
 
 
@@ -600,57 +603,82 @@ task runMotors(){
 */
 task spin_flywheel(){
 	while(true){
-		if(FW_loopCount == 50){
+		if(FW_loopCount >= 50){
+			if(FW_stopped == false){
+				FW_ticksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
 
-			FW_ticksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
+				SensorValue[flyR2IEM] = 0;
+				SensorValue[flyL2IEM] = 0;
 
-			SensorValue[flyR2IEM] = 0;
-			SensorValue[flyL2IEM] = 0;
-
-			if(FW_half == false){
-				if(FW_ticksPassed >= 130){
-					SensorValue[ledMed] = 1;
-					SensorValue[ledHigh] = 1;
-					motor[flyR1] = FW_power;
-			    motor[flyR2] = FW_power;
-			    motor[flyL1] = FW_power;
-			    motor[flyL2] = FW_power;
-			    motor[topIntake] = FW_power - (FW_power/5);
-				} else {
-					SensorValue[ledMed] = 0;
-					SensorValue[ledHigh] = 0;
-					if(FW_power <= 127){
-						FW_power = FW_power + 5;
+				if(FW_half == false){
+					if(FW_ticksPassed == FW_highSpeed){
+						SensorValue[ledMed] = 1;
+						SensorValue[ledHigh] = 1;
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
+					} else if(FW_ticksPassed >= FW_highSpeed+5){
+						SensorValue[ledMed] = 1;
+						SensorValue[ledHigh] = 1;
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
+						FW_power = FW_power - 1;
+					} else {
+						SensorValue[ledMed] = 0;
+						SensorValue[ledHigh] = 0;
+						if(FW_power <= 127){
+							FW_power = FW_power + 5;
+						}
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
 					}
-					motor[flyR1] = FW_power;
-			    motor[flyR2] = FW_power;
-			    motor[flyL1] = FW_power;
-			    motor[flyL2] = FW_power;
-			    motor[topIntake] = FW_power - (FW_power/5);
+				} else {
+					if(FW_ticksPassed == FW_medSpeed){
+						SensorValue[ledMed] = 1;
+						SensorValue[ledHigh] = 0;
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
+					} else if(FW_ticksPassed >= FW_medSpeed+5){
+						SensorValue[ledMed] = 1;
+						SensorValue[ledHigh] = 0;
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
+						FW_power = FW_power - 1;
+					} else {
+						SensorValue[ledMed] = 0;
+						SensorValue[ledHigh] = 0;
+						if(FW_power <= 127){
+							FW_power = FW_power + 5;
+						}
+						motor[flyR1] = FW_power;
+				    motor[flyR2] = FW_power;
+				    motor[flyL1] = FW_power;
+				    motor[flyL2] = FW_power;
+				    motor[topIntake] = FW_power - (FW_power/5);
+					}
 				}
 			} else {
-				if(FW_ticksPassed > 65){
-					SensorValue[ledMed] = 1;
-					SensorValue[ledHigh] = 0;
-					motor[flyR1] = FW_power;
-			    motor[flyR2] = FW_power;
-			    motor[flyL1] = FW_power;
-			    motor[flyL2] = FW_power;
-			    motor[topIntake] = FW_power - (FW_power/5);
-				} else {
-					SensorValue[ledMed] = 0;
-					SensorValue[ledHigh] = 0;
-					if(FW_power <= 127){
-						FW_power = FW_power + 5;
-					}
-					motor[flyR1] = FW_power;
-			    motor[flyR2] = FW_power;
-			    motor[flyL1] = FW_power;
-			    motor[flyL2] = FW_power;
-			    motor[topIntake] = FW_power - (FW_power/5);
-				}
+				motor[flyR1] = 0;
+		    motor[flyR2] = 0;
+		    motor[flyL1] = 0;
+		    motor[flyL2] = 0;
+		    motor[topIntake] = 0;
+		    FW_power = 0;
 			}
-
 			FW_loopCount = 0;
 	  } else {
 	  	FW_loopCount += 1;
@@ -659,15 +687,15 @@ task spin_flywheel(){
 	}
 }
 
-/*void spin_flywheel(float initial=0, float speed, int seconds){
-  int FW_power = initial;
+void spin_flywheel_old(float initial=0, float speed, int seconds){
+  int power = initial;
   for (int i = 0; i < 21; i++){
-    motor[flyR1] = FW_power;
-    motor[flyR2] = FW_power;
-    motor[flyL1] = FW_power;
-    motor[flyL2] = FW_power;
-    motor[topIntake] = FW_power - (speed/5);
-    FW_power = FW_power + (speed/20);
+    motor[flyR1] = power;
+    motor[flyR2] = power;
+    motor[flyL1] = power;
+    motor[flyL2] = power;
+    motor[topIntake] = power - (speed/5);
+    power = power + (speed/20);
     wait1Msec(seconds/20);
   }
 
@@ -676,4 +704,4 @@ task spin_flywheel(){
   motor[flyL1] = speed;
   motor[flyL2] = speed;
   motor[topIntake] = speed - (speed/5);
-}*/
+}
