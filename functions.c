@@ -632,7 +632,13 @@ task spin_flywheel(){
 						SensorValue[ledMed] = 0;
 						SensorValue[ledHigh] = 0;
 						if(FW_power <= 127){
-							FW_power = FW_power + 5;
+							if(FW_ticksPassed < FW_highSpeed/2){
+								FW_power = FW_power + 20;
+							} else if(FW_ticksPassed < FW_highSpeed*0.75) {
+								FW_power = FW_power + 5;
+							} else {
+								FW_power = FW_power + 1;
+							}
 						}
 						motor[flyR1] = FW_power;
 				    motor[flyR2] = FW_power;
@@ -662,7 +668,13 @@ task spin_flywheel(){
 						SensorValue[ledMed] = 0;
 						SensorValue[ledHigh] = 0;
 						if(FW_power <= 127){
-							FW_power = FW_power + 5;
+							if(FW_ticksPassed < FW_highSpeed/2){
+								FW_power = FW_power + 20;
+							} else if(FW_ticksPassed < FW_highSpeed*0.75) {
+								FW_power = FW_power + 5;
+							} else {
+								FW_power = FW_power + 1;
+							}
 						}
 						motor[flyR1] = FW_power;
 				    motor[flyR2] = FW_power;

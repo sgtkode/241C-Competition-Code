@@ -112,7 +112,7 @@ task autonomous(){
 
 	} else if(position == 5){ // testing bruh
 
-		motor[flyR1] = 120;
+		/*motor[flyR1] = 120;
 		wait1Msec(1000);
 		motor[flyR1] = 0;
 		motor[flyR2] = 120;
@@ -123,8 +123,9 @@ task autonomous(){
 		motor[flyL1] = 0;
 		motor[flyL2] = 120;
 		wait1Msec(1000);
-		motor[flyL2] = 0;
-		//startTask(spin_flywheel);
+		motor[flyL2] = 0;*/
+		startTask(spin_flywheel);
+		FW_stopped = false;
 
 	}
 }
@@ -168,10 +169,10 @@ task usercontrol(){
 	  		motor[backl] = vexRT[Ch3];
 	  		motor[frontl] = vexRT[Ch3];
 			} else {*/
-				motor[backr] = vexRT[Ch2];
-	  		motor[frontr] = vexRT[Ch2];
-	  		motor[backl] = vexRT[Ch3];
-	  		motor[frontl] = vexRT[Ch3];
+				motor[backr] = vexRT[Ch2]*0.78;
+	  		motor[frontr] = vexRT[Ch2]*0.78;
+	  		motor[backl] = vexRT[Ch3]*0.78;
+	  		motor[frontl] = vexRT[Ch3]*0.78;
 			//}
 
 			/////////////////////////////////////////////////////////////////////////////////////////
