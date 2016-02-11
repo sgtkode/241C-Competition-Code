@@ -49,8 +49,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool highSpeedUpBtnPrsd = false;
-bool highSpeedDownBtnPrsd = false;
+bool highSpeedUpBtnPrsd = false; /*!< boolean that prevents astronomical increase from prolonged button press */
+bool highSpeedDownBtnPrsd = false; /*!< boolean that prevents astronomical decrease from prolonged button press */
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -83,7 +83,7 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 1;
+	int position = 5;
 
 	if(position == 1){ // blue, net side
 

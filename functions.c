@@ -49,8 +49,8 @@ int backLeftVal   = 0; /*!< value of the back  left  motor */
 int frontRightVal = 0; /*!< value of the front right motor */
 int backRightVal  = 0; /*!< value of the back  right motor */
 
-int FW_highSpeed = 175;
-int FW_highSpeedDefault = 175;
+int FW_highSpeed = 130;
+int FW_highSpeedDefault = 130;
 int FW_medSpeed = 60;
 int FW_medSpeedDefault = 60;
 int FW_loopCount = 0; /*!< loop count for flywheel */
