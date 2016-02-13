@@ -49,10 +49,10 @@ int backLeftVal   = 0; /*!< value of the back  left  motor */
 int frontRightVal = 0; /*!< value of the front right motor */
 int backRightVal  = 0; /*!< value of the back  right motor */
 
-int FW_highSpeed = 130;
-int FW_highSpeedDefault = 130;
-int FW_medSpeed = 60;
-int FW_medSpeedDefault = 60;
+int FW_highSpeed = 88;
+int FW_highSpeedDefault = 88;
+int FW_medSpeed = 45;
+int FW_medSpeedDefault = 45;
 int FW_loopCount = 0; /*!< loop count for flywheel */
 float FW_ticksPassed = 0; /*!< amount of ticks passed by flywheel in 5 loop counts */
 bool FW_half = false; /*!< boolean that determines if flywheel is at half */
@@ -603,7 +603,7 @@ task runMotors(){
 */
 task spin_flywheel(){
 	while(true){
-		if(FW_loopCount >= 50){
+		if(FW_loopCount >= 25){
 			if(FW_stopped == false){
 				FW_ticksPassed = (abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2;
 
@@ -632,9 +632,9 @@ task spin_flywheel(){
 						SensorValue[ledMed] = 0;
 						SensorValue[ledHigh] = 0;
 						if(FW_power <= 127){
-							if(FW_ticksPassed < FW_highSpeed/2){
-								FW_power = FW_power + 20;
-							} else if(FW_ticksPassed < FW_highSpeed*0.75) {
+							if(FW_ticksPassed < FW_highSpeed*0.5){
+								FW_power = FW_power + 5;
+							} else if(FW_ticksPassed < FW_highSpeed*0.6) {
 								FW_power = FW_power + 5;
 							} else {
 								FW_power = FW_power + 1;
@@ -668,9 +668,9 @@ task spin_flywheel(){
 						SensorValue[ledMed] = 0;
 						SensorValue[ledHigh] = 0;
 						if(FW_power <= 127){
-							if(FW_ticksPassed < FW_highSpeed/2){
-								FW_power = FW_power + 20;
-							} else if(FW_ticksPassed < FW_highSpeed*0.75) {
+							if(FW_ticksPassed < FW_highSpeed*0.5){
+								FW_power = FW_power + 5;
+							} else if(FW_ticksPassed < FW_highSpeed*0.6) {
 								FW_power = FW_power + 5;
 							} else {
 								FW_power = FW_power + 1;
