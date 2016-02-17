@@ -83,7 +83,7 @@ task autonomous(){
 	startTask(runMotors);
 
 	// position of bot on field
-	int position = 5;
+	int position = 1;
 
 	if(position == 1){ // blue, net side
 
@@ -125,7 +125,7 @@ task autonomous(){
 		wait1Msec(1000);
 		motor[flyL2] = 0;*/
 		startTask(spin_flywheel);
-		FW_stopped = false;
+		FW_running = true;
 
 	}
 }
@@ -188,7 +188,7 @@ task usercontrol(){
 			}
 
   		if(vexRT[Btn5U] == 1){
-				FW_stopped = false;
+				FW_running = true;
   			if(FW_half){
   				FW_half = false;
   			} else {
@@ -197,7 +197,7 @@ task usercontrol(){
   		}
 
   		if(vexRT[Btn5D] == 1){
-  			FW_stopped = true;
+  			FW_running = false;
   			if(FW_half){
   				FW_half = false;
   			} else {
