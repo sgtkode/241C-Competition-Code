@@ -59,6 +59,16 @@ bool FW_half = false; /*!< boolean that determines if flywheel is at half */
 bool FW_stopped = true; /*!< boolean that determines if flywheel is stopped */
 int FW_power = 0; /*!< power value for the flywheel */
 
+#define PID_SENSOR_SCALE    1
+
+#define PID_MOTOR_SCALE     -1
+
+#define PID_DRIVE_MAX       127
+#define PID_DRIVE_MIN     (-127)
+
+#define PID_INTEGRAL_LIMIT  50
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -696,6 +706,117 @@ task spin_flywheel(){
 	  	FW_loopCount += 1;
 	  }
 	  wait1Msec(10);
+	}
+}
+
+// These could be constants but leaving
+// as variables allows them to be modified in the debugger "live"
+float  pid_Kp = 2.0;
+float  pid_Ki = 0.04;
+float  pid_Kd = 0.0;
+
+/*-----------------------------------------------------------------------------*/
+/*                                                                             */
+/*  pid control task                                                           */
+/*                                                                             */
+/*-----------------------------------------------------------------------------*/
+
+task FW_pidController()
+{
+    float  pidSensorCurrentValue;
+
+    float  pidError;
+    float  pidLastError;
+    float  pidIntegral;
+    float  pidDerivative;
+    float  pidDrive;
+
+    // If we are using an encoder then clear it
+    SensorValue[flyR2IEM] = 0;
+		SensorValue[flyL2IEM] = 0;
+
+    // Init the variables - thanks Glenn :)
+    pidLastError  = 0;
+    pidIntegral   = 0;
+
+    while( true )
+        {
+        // Is PID control active ?
+        if( FW_stopped )
+            {
+            // Read the sensor value and scale
+            pidSensorCurrentValue = ((abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2) * PID_SENSOR_SCALE;
+
+            // since flywheel is continuously spinning, reset encoders
+            SensorValue[flyR2IEM] = 0;
+						SensorValue[flyL2IEM] = 0;
+
+            // calculate error
+            if(FW_half){
+            	pidError = pidSensorCurrentValue - FW_medSpeed;
+            	if(pidError <= FW_medSpeed+5){
+            		SensorValue[ledMed] = 1;
+	            } else if(pidError >= FW_medSpeed-5) {
+	            	SensorValue[ledMed] = 1;
+	            } else {
+								SensorValue[ledMed] = 0;
+	            }
+            } else {
+            	pidError = pidSensorCurrentValue - FW_highSpeed;
+            	if(pidError <= FW_highSpeed+5){
+            		SensorValue[ledHigh] = 1;
+	            } else if(pidError >= FW_highSpeed-5) {
+	            	SensorValue[ledHigh] = 1;
+	            } else {
+								SensorValue[ledHigh] = 0;
+	            }
+            }
+
+            // integral - if Ki is not 0
+            if( pid_Ki != 0 )
+                {
+                // If we are inside controlable window then integrate the error
+                if( abs(pidError) < PID_INTEGRAL_LIMIT )
+                    pidIntegral = pidIntegral + pidError;
+                else
+                    pidIntegral = 0;
+                }
+            else
+                pidIntegral = 0;
+
+            // calculate the derivative
+            pidDerivative = pidError - pidLastError;
+            pidLastError  = pidError;
+
+            // calculate drive
+            pidDrive = (pid_Kp * pidError) + (pid_Ki * pidIntegral) + (pid_Kd * pidDerivative);
+
+            // limit drive
+            if( pidDrive > PID_DRIVE_MAX )
+                pidDrive = PID_DRIVE_MAX;
+            if( pidDrive < PID_DRIVE_MIN )
+                pidDrive = PID_DRIVE_MIN;
+
+            // send to flywheel
+            motor[flyR1] = pidDrive * PID_MOTOR_SCALE;
+				    motor[flyR2] = pidDrive * PID_MOTOR_SCALE;
+				    motor[flyL1] = pidDrive * PID_MOTOR_SCALE;
+				    motor[flyL2] = pidDrive * PID_MOTOR_SCALE;
+				    motor[topIntake] = (pidDrive * PID_MOTOR_SCALE) - ((pidDrive * PID_MOTOR_SCALE)/5);
+      } else {
+        // clear all
+        pidError      = 0;
+        pidLastError  = 0;
+        pidIntegral   = 0;
+        pidDerivative = 0;
+        motor[flyR1] = 0;
+		    motor[flyR2] = 0;
+		    motor[flyL1] = 0;
+		    motor[flyL2] = 0;
+		    motor[topIntake] = 0;
+      }
+	  // Run at 4Hz
+	  wait1Msec( 250 );
 	}
 }
 
