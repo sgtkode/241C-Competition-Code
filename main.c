@@ -51,6 +51,7 @@
 
 bool highSpeedUpBtnPrsd = false; /*!< boolean that prevents astronomical increase from prolonged button press */
 bool highSpeedDownBtnPrsd = false; /*!< boolean that prevents astronomical decrease from prolonged button press */
+bool halfSpeedBtnPrsd = false; /*!< boolean that prevents astronomical change from prolonged button press */
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -181,6 +182,7 @@ task usercontrol(){
       //
       /////////////////////////////////////////////////////////////////////////////////////////
 			startTask(FW_pidController);
+			//startTask(spin_flywheel);
 
 	  	if(vexRT[Btn8R] == 1){
 				SensorValue[ledMed] = 1;
@@ -189,20 +191,23 @@ task usercontrol(){
 
   		if(vexRT[Btn5U] == 1){
 				FW_running = true;
-  			if(FW_half){
-  				FW_half = false;
-  			} else {
-  				FW_half = true;
-  			}
   		}
 
   		if(vexRT[Btn5D] == 1){
   			FW_running = false;
-  			if(FW_half){
-  				FW_half = false;
-  			} else {
-  				FW_half = true;
+  		}
+
+  		if(vexRT[Btn7L] == 1){
+  			if(halfSpeedBtnPrsd == false){
+  				if(FW_half){
+	  				FW_half = false;
+	  			} else {
+	  				FW_half = true;
+	  			}
   			}
+  			halfSpeedBtnPrsd = true;
+  		} else {
+  			halfSpeedBtnPrsd = false;
   		}
 
   		if(vexRT[Btn7U] == 1){
