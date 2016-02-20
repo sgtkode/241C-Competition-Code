@@ -5,11 +5,13 @@
 #pragma config(Sensor, dgtl7,  ledMed,         sensorLEDtoVCC)
 #pragma config(Sensor, dgtl8,  ledHigh,        sensorLEDtoVCC)
 #pragma config(Sensor, I2C_1,  flyR2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
-#pragma config(Sensor, I2C_2,  flyL2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
-#pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop)
+#pragma config(Sensor, I2C_2,  flyR1IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_3,  flyL2IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_4,  flyL1IEM,       sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Motor,  port1,           flyR1,         tmotorVex393_HBridge, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port2,           flyR2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_1)
-#pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_2)
+#pragma config(Motor,  port3,           flyL1,         tmotorVex393_MC29, openLoop, encoderPort, I2C_4)
+#pragma config(Motor,  port4,           flyL2,         tmotorVex393_MC29, openLoop, encoderPort, I2C_3)
 #pragma config(Motor,  port5,           frontl,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           frontr,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,           backl,         tmotorVex393_MC29, openLoop, reversed)
@@ -66,15 +68,35 @@ int FW_power = 0; /*!< power value for the flywheel */
 #define PID_DRIVE_MAX       127.0
 #define PID_DRIVE_MIN     (-127.0)
 
-#define PID_INTEGRAL_LIMIT  50.0
+#define PID_INTEGRAL_LIMIT  200.0
 
-float  pidSensorCurrentValue;
+float  R1SensorCurrentValue;
+float  R1Error;
+float  R1LastError;
+float  R1Integral;
+float  R1Derivative;
+float  R1Drive;
 
-float  pidError;
-float  pidLastError;
-float  pidIntegral;
-float  pidDerivative;
-float  pidDrive;
+float  R2SensorCurrentValue;
+float  R2Error;
+float  R2LastError;
+float  R2Integral;
+float  R2Derivative;
+float  R2Drive;
+
+float  L1SensorCurrentValue;
+float  L1Error;
+float  L1LastError;
+float  L1Integral;
+float  L1Derivative;
+float  L1Drive;
+
+float  L2SensorCurrentValue;
+float  L2Error;
+float  L2LastError;
+float  L2Integral;
+float  L2Derivative;
+float  L2Drive;
 
 
 
@@ -632,7 +654,7 @@ task spin_flywheel(){
 					if(FW_ticksPassed == FW_highSpeed){
 						SensorValue[ledMed] = 1;
 						SensorValue[ledHigh] = 1;
-						motor[flyR1] = FW_power;
+						motor[flyR1] = -FW_power;
 				    motor[flyR2] = FW_power;
 				    motor[flyL1] = FW_power;
 				    motor[flyL2] = FW_power;
@@ -640,7 +662,7 @@ task spin_flywheel(){
 					} else if(FW_ticksPassed >= FW_highSpeed+5){
 						SensorValue[ledMed] = 1;
 						SensorValue[ledHigh] = 1;
-						motor[flyR1] = FW_power;
+						motor[flyR1] = -FW_power;
 				    motor[flyR2] = FW_power;
 				    motor[flyL1] = FW_power;
 				    motor[flyL2] = FW_power;
@@ -658,7 +680,7 @@ task spin_flywheel(){
 								FW_power = FW_power + 1;
 							}
 						}
-						motor[flyR1] = FW_power;
+						motor[flyR1] = -FW_power;
 				    motor[flyR2] = FW_power;
 				    motor[flyL1] = FW_power;
 				    motor[flyL2] = FW_power;
@@ -719,8 +741,8 @@ task spin_flywheel(){
 
 // These could be constants but leaving
 // as variables allows them to be modified in the debugger "live"
-float  pid_Kp = 0.175;
-float  pid_Ki = 0.01;
+float  pid_Kp = 0.5;
+float  pid_Ki = 0.1;
 float  pid_Kd = 0.005;
 
 /**
@@ -741,27 +763,38 @@ task FW_pidController()
 	    // Is PID control active ?
 	    if( FW_running ) {
 	      // Read the sensor value and scale
-	      pidSensorCurrentValue = ((abs(SensorValue[flyR2IEM]) + abs(SensorValue[flyL2IEM])) / 2)/* * PID_SENSOR_SCALE*/;
+	      R1SensorCurrentValue = abs(SensorValue[flyR2IEM])/* * PID_SENSOR_SCALE*/;
+	      R2SensorCurrentValue = abs(SensorValue[flyR2IEM])/* * PID_SENSOR_SCALE*/;
+	      L1SensorCurrentValue = abs(SensorValue[flyR2IEM])/* * PID_SENSOR_SCALE*/;
+	      L2SensorCurrentValue = abs(SensorValue[flyR2IEM])/* * PID_SENSOR_SCALE*/;
 
 	      // since flywheel is continuously spinning, reset encoders
-	      SensorValue[flyR2IEM] = 0;
+	      SensorValue[flyR1IEM] = 0;
+				SensorValue[flyR2IEM] = 0;
+				SensorValue[flyL1IEM] = 0;
 				SensorValue[flyL2IEM] = 0;
 
 	      // calculate error
 	      if(FW_half){
-	      	pidError = pidSensorCurrentValue - FW_medSpeed;
-	      	if(pidError <= FW_medSpeed+5){
+	      	R1Error = R1SensorCurrentValue - FW_medSpeed;
+	      	R2Error = R2SensorCurrentValue - FW_medSpeed;
+	      	L1Error = L1SensorCurrentValue - FW_medSpeed;
+	      	L2Error = L2SensorCurrentValue - FW_medSpeed;
+	      	if(((R1Error+R2Error+L1Error+L2Error)/4) <= FW_medSpeed+5){
 	      		SensorValue[ledMed] = 1;
-	        } else if(pidError >= FW_medSpeed-5) {
+	        } else if(((R1Error+R2Error+L1Error+L2Error)/4) >= FW_medSpeed-5) {
 	        	SensorValue[ledMed] = 1;
 	        } else {
 						SensorValue[ledMed] = 0;
 	        }
 	      } else {
-	      	pidError = pidSensorCurrentValue - FW_highSpeed;
-	      	if(pidError <= FW_highSpeed+5){
+	      	R1Error = R1SensorCurrentValue - FW_highSpeed;
+	      	R2Error = R2SensorCurrentValue - FW_highSpeed;
+	      	L1Error = L1SensorCurrentValue - FW_highSpeed;
+	      	L2Error = L2SensorCurrentValue - FW_highSpeed;
+	      	if(((R1Error+R2Error+L1Error+L2Error)/4) <= FW_highSpeed+5){
 	      		SensorValue[ledHigh] = 1;
-	        } else if(pidError >= FW_highSpeed-5) {
+	        } else if(((R1Error+R2Error+L1Error+L2Error)/4) >= FW_highSpeed-5) {
 	        	SensorValue[ledHigh] = 1;
 	        } else {
 						SensorValue[ledHigh] = 0;
@@ -769,43 +802,108 @@ task FW_pidController()
 	      }
 
 	      // integral - if Ki is not 0
-	      if( pid_Ki != 0 )
-	          {
+	      if( pid_Ki != 0 ){
+
 	          // If we are inside controlable window then integrate the error
-	          if( abs(pidError) < PID_INTEGRAL_LIMIT )
-	              pidIntegral = pidIntegral + pidError;
-	          else
-	              pidIntegral = 0;
+	          if( abs(R1Error) < PID_INTEGRAL_LIMIT ){
+	             R1Integral = R1Integral + R1Error;
+	        	} else {
+	              R1Integral = 0;
 	          }
-	      else
-	          pidIntegral = 0;
+	          if( abs(R2Error) < PID_INTEGRAL_LIMIT ){
+	              R2Integral = R2Integral + R2Error;
+	          } else {
+	              R2Integral = 0;
+	          }
+	          if( abs(L1Error) < PID_INTEGRAL_LIMIT ){
+	              L1Integral = L1Integral + L1Error;
+	          } else {
+	              L1Integral = 0;
+	          }
+	          if( abs(L2Error) < PID_INTEGRAL_LIMIT ){
+	              L2Integral = L2Integral + L2Error;
+	          } else {
+	              L2Integral = 0;
+	          }
+	    	} else {
+	          R1Integral = 0;
+	          R2Integral = 0;
+	          L1Integral = 0;
+	          L2Integral = 0;
+	    	}
 
 	      // calculate the derivative
-	      pidDerivative = pidError - pidLastError;
-	      pidLastError  = pidError;
+	      R1Derivative = R1Error - R1LastError;
+	      R1LastError  = R1Error;
+
+	      R2Derivative = R2Error - R2LastError;
+	      R2LastError  = R2Error;
+
+	      L1Derivative = L1Error - L1LastError;
+	      L1LastError  = L1Error;
+
+	      L2Derivative = L2Error - L2LastError;
+	      L2LastError  = L2Error;
 
 	      // calculate drive
-	      pidDrive = (pid_Kp * pidError) + (pid_Ki * pidIntegral) + (pid_Kd * pidDerivative);
+	      R1Drive = (pid_Kp * R1Error) + (pid_Ki * R1Integral) + (pid_Kd * R1Derivative);
+	      R2Drive = (pid_Kp * R2Error) + (pid_Ki * R2Integral) + (pid_Kd * R2Derivative);
+	      L1Drive = (pid_Kp * L1Error) + (pid_Ki * L1Integral) + (pid_Kd * L1Derivative);
+	      L2Drive = (pid_Kp * L2Error) + (pid_Ki * L2Integral) + (pid_Kd * L2Derivative);
 
 	      // limit drive
-	      if( pidDrive > PID_DRIVE_MAX )
-	          pidDrive = PID_DRIVE_MAX;
-	      if( pidDrive < PID_DRIVE_MIN )
-	          pidDrive = PID_DRIVE_MIN;
+	      if( R1Drive > PID_DRIVE_MAX )
+	          R1Drive = PID_DRIVE_MAX;
+	      if( R1Drive < PID_DRIVE_MIN )
+	          R1Drive = PID_DRIVE_MIN;
+
+	      if( R2Drive > PID_DRIVE_MAX )
+	          R2Drive = PID_DRIVE_MAX;
+	      if( R2Drive < PID_DRIVE_MIN )
+	          R2Drive = PID_DRIVE_MIN;
+
+	      if( L1Drive > PID_DRIVE_MAX )
+	          L1Drive = PID_DRIVE_MAX;
+	      if( L1Drive < PID_DRIVE_MIN )
+	          L1Drive = PID_DRIVE_MIN;
+
+	      if( L2Drive > PID_DRIVE_MAX )
+	          L2Drive = PID_DRIVE_MAX;
+	      if( L2Drive < PID_DRIVE_MIN )
+	          L2Drive = PID_DRIVE_MIN;
 
 	      // send to flywheel
-	      motor[flyR1] = pidDrive * PID_MOTOR_SCALE;
-		    motor[flyR2] = pidDrive * PID_MOTOR_SCALE;
-		    motor[flyL1] = pidDrive * PID_MOTOR_SCALE;
-		    motor[flyL2] = pidDrive * PID_MOTOR_SCALE;
-		    motor[topIntake] = (pidDrive * PID_MOTOR_SCALE) - ((pidDrive * PID_MOTOR_SCALE)/5);
+	      motor[flyR1] = R1Drive/* * PID_MOTOR_SCALE*/;
+		    motor[flyR2] = R2Drive * -1.0/* * PID_MOTOR_SCALE*/;
+		    motor[flyL1] = L1Drive * -1.0/* * PID_MOTOR_SCALE*/;
+		    motor[flyL2] = L2Drive * -1.0/* * PID_MOTOR_SCALE*/;
+		    motor[topIntake] = (((R1Drive+R2Drive+L1Drive+L2Drive)/4) * PID_MOTOR_SCALE) - ((((R1Drive+R2Drive+L1Drive+L2Drive)/4) * PID_MOTOR_SCALE)/5);
 	    } else {
 	      // clear all
-	      pidError      = 0;
-	      pidLastError  = 0;
-	      pidIntegral   = 0;
-	      pidDerivative = 0;
-	      pidDrive = 0;
+	      R1Error      = 0;
+	      R1LastError  = 0;
+	      R1Integral   = 0;
+	      R1Derivative = 0;
+	      R1Drive = 0;
+
+	      R2Error      = 0;
+	      R2LastError  = 0;
+	      R2Integral   = 0;
+	      R2Derivative = 0;
+	      R2Drive = 0;
+
+	      L1Error      = 0;
+	      L1LastError  = 0;
+	      L1Integral   = 0;
+	      L1Derivative = 0;
+	      L1Drive = 0;
+
+	      L2Error      = 0;
+	      L2LastError  = 0;
+	      L2Integral   = 0;
+	      L2Derivative = 0;
+	      L2Drive = 0;
+
 	      motor[flyR1] = 0;
 		    motor[flyR2] = 0;
 		    motor[flyL1] = 0;
