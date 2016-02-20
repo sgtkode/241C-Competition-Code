@@ -53,8 +53,8 @@ int backRightVal  = 0; /*!< value of the back  right motor */
 
 int FW_highSpeed = 90;
 int FW_highSpeedDefault = 90;
-int FW_medSpeed = 40;
-int FW_medSpeedDefault = 40;
+int FW_medSpeed = 60;
+int FW_medSpeedDefault = 60;
 int FW_loopCount = 0; /*!< loop count for flywheel */
 float FW_ticksPassed = 0; /*!< amount of ticks passed by flywheel in 5 loop counts */
 bool FW_half = false; /*!< boolean that determines if flywheel is at half */
@@ -631,6 +631,23 @@ task runMotors(){
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
+//                                 Intake
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+/**
+*	Intake balls
+*
+* @author Sean Kelley  sgtkode01@gmail.com
+*
+*/
+void spinIntake(int speed, float seconds){
+	motor[bottomIntake] = speed;
+	wait1Msec(seconds*1000);
+	motor[bottomIntake] = 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
 //                                 Flywheel
 //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -918,6 +935,12 @@ task FW_pidController()
 	}
 }
 
+/**
+*	Spins up the fly wheel to a certain motor power
+*
+* @author Sean Kelley  sgtkode01@gmail.com
+*
+*/
 void spin_flywheel_old(float initial=0, float speed, int seconds){
   int power = initial;
   for (int i = 0; i < 21; i++){

@@ -90,11 +90,26 @@ task autonomous(){
 
 	if(position == 1){ // blue, net side
 
-		//spin_flywheel(0, 75, 300);
-		//motor[bottomIntake] = 100;
-		//wait1Msec(10000);
+		FW_highSpeed = 185;
+		pid_Kp = 0.5;
+		pid_Ki = 0.0865;
+		pid_Kd = 0.005;
+		startTask(FW_pidController);
+		FW_running = true;
+		FW_half = false;
 
-		//forwardSeconds(1);
+
+		wait1Msec(4500);
+		spinIntake(100, 0.5);
+		wait1Msec(2500);
+		spinIntake(100, 0.5);
+		wait1Msec(2500);
+		spinIntake(100, 0.75);
+		wait1Msec(2500);
+		spinIntake(100, 0.5);
+
+		//FW_running = false;
+
 	} else if(position == 2){ // blue, enemy side
 
 		//spin_flywheel(0, 75, 300);
@@ -151,6 +166,11 @@ task usercontrol(){
 	SensorValue[encoderL] = 0;
 	SensorValue[encoderR] = 0;
 
+	FW_highSpeed = FW_highSpeedDefault;
+	pid_Kp = 0.5;
+	pid_Ki = 0.1;
+	pid_Kd = 0.005;
+
   while (true)
 	{
     if(bVEXNETActive){
@@ -203,8 +223,14 @@ task usercontrol(){
   			if(halfSpeedBtnPrsd == false){
   				if(FW_half){
 	  				FW_half = false;
+	  				pid_Kp = 0.5;
+						pid_Ki = 0.1;
+						pid_Kd = 0.005;
 	  			} else {
 	  				FW_half = true;
+	  				pid_Kp = 0.5;
+						pid_Ki = 0.095;
+						pid_Kd = 0.005;
 	  			}
   			}
   			halfSpeedBtnPrsd = true;
@@ -214,7 +240,11 @@ task usercontrol(){
 
   		if(vexRT[Btn7U] == 1){
   			if(highSpeedUpBtnPrsd == false){
-  				FW_highSpeed = FW_highSpeed + 1;
+  				if(FW_half){
+	  				FW_medSpeed = FW_medSpeed + 1;
+	  			} else {
+	  				FW_highSpeed = FW_highSpeed + 1;
+	  			}
   			}
   			highSpeedUpBtnPrsd = true;
   		} else {
@@ -223,7 +253,11 @@ task usercontrol(){
 
   		if(vexRT[Btn7D] == 1){
   			if(highSpeedDownBtnPrsd == false){
-  				FW_highSpeed = FW_highSpeed - 1;
+  				if(FW_half){
+	  				FW_medSpeed = FW_medSpeed + 1;
+	  			} else {
+	  				FW_highSpeed = FW_highSpeed + 1;
+	  			}
   			}
   			highSpeedDownBtnPrsd = true;
   		} else {
@@ -239,7 +273,11 @@ task usercontrol(){
       }
 
   		if(vexRT[Btn7R] == 1){
-      	FW_highSpeed = FW_highSpeedDefault;
+  			if(FW_half){
+  				FW_medSpeed = FW_medSpeedDefault;
+  			} else {
+  				FW_highSpeed = FW_highSpeedDefault;
+  			}
   		}
 
       wait1Msec(10);
