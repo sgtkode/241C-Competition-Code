@@ -108,7 +108,11 @@ task autonomous(){
 		wait1Msec(2500);
 		spinIntake(100, 0.5);
 
-		//FW_running = false;
+		FW_running = false;
+		FW_highSpeed = FW_highSpeedDefault;
+		pid_Kp = 0.5;
+		pid_Ki = 0.1;
+		pid_Kd = 0.005;
 
 	} else if(position == 2){ // blue, enemy side
 
@@ -165,11 +169,6 @@ task usercontrol(){
 	SensorValue[ledHigh] = 0;
 	SensorValue[encoderL] = 0;
 	SensorValue[encoderR] = 0;
-
-	FW_highSpeed = FW_highSpeedDefault;
-	pid_Kp = 0.5;
-	pid_Ki = 0.1;
-	pid_Kd = 0.005;
 
   while (true)
 	{
@@ -251,15 +250,46 @@ task usercontrol(){
   			highSpeedUpBtnPrsd = false;
   		}
 
+
   		if(vexRT[Btn7D] == 1){
-  			if(highSpeedDownBtnPrsd == false){
+  			if(FW_highSpeed > 0 && FW_medSpeed > 0){
+	  			if(highSpeedDownBtnPrsd == false){
+	  				if(FW_half){
+		  				FW_medSpeed = FW_medSpeed - 1;
+		  			} else {
+		  				FW_highSpeed = FW_highSpeed - 1;
+		  			}
+	  			}
+	  			highSpeedDownBtnPrsd = true;
+  			}
+  		} else {
+  			highSpeedDownBtnPrsd = false;
+  		}
+
+  		if(vexRT[Btn8U] == 1){
+  			if(highSpeedUpBtnPrsd == false){
   				if(FW_half){
-	  				FW_medSpeed = FW_medSpeed + 1;
+	  				FW_medSpeed = FW_medSpeed + 10;
 	  			} else {
-	  				FW_highSpeed = FW_highSpeed + 1;
+	  				FW_highSpeed = FW_highSpeed + 10;
 	  			}
   			}
-  			highSpeedDownBtnPrsd = true;
+  			highSpeedUpBtnPrsd = true;
+  		} else {
+  			highSpeedUpBtnPrsd = false;
+  		}
+
+  		if(vexRT[Btn8D] == 1){
+  			if(FW_highSpeed > 10 && FW_medSpeed > 10){
+	  			if(highSpeedDownBtnPrsd == false){
+	  				if(FW_half){
+		  				FW_medSpeed = FW_medSpeed - 10;
+		  			} else {
+		  				FW_highSpeed = FW_highSpeed - 10;
+		  			}
+	  			}
+	  			highSpeedDownBtnPrsd = true;
+  			}
   		} else {
   			highSpeedDownBtnPrsd = false;
   		}
